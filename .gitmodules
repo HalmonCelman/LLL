@@ -1,0 +1,3 @@
+[submodule "Compiler"]
+	path = Compiler
+	url = https://github.com/HalmonCelman/LLL_Compiler
