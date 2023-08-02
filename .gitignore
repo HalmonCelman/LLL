@@ -1,0 +1,5 @@
+# compiled lll files
+*.l
+
+# build
+[Bb][Uu][Ii][Ll][Dd]
