@@ -1,5 +1,5 @@
-seri 3 &0 5 3 1
-sub 3 &0
-sub 3 &0
-seri 1 &1 255
-sub 2 &0
+seri 3 &0 5 3 1 
+sub 3 &0            # expected reg: 1 ovf: 0
+sub 3 &0            # expected reg: 0 ovf: 3
+seri 2 &1 255 10
+sub 3 &0            # expected reg: 10 ovf: 255

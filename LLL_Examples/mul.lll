@@ -1,5 +1,5 @@
 seri 3 &0 2 3 4
-mul 3 &0
+mul 3 &0        # expected reg:  24 (0x18) R: 0
 seri 1 &1 255
-mul 2 &0
-mul 3 &0
+mul 2 &0        # expected reg: 232 (0xe8) R: 23 (0x17)
+mul 3 &0        # expected reg:  96 (0x60) R: 156 (0x9c)

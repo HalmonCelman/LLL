@@ -1,3 +1,3 @@
-seri 1 &0 4
-muli &0 6
-muli &0 255
+seri 1 &0 4 
+muli &0 6       # expected reg: 24 (0x18) R: 0
+muli &0 255     # expected reg: 232 (0xe8) R: 23 (0x17)

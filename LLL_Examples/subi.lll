@@ -1,4 +1,4 @@
 seri 1 &0 5
-subi &0 4
-subi &0 4
-subi &0 255
+subi &0 4       # expected reg: 1 ovf: 0
+subi &0 4       # expected reg: 0 ovf: 3
+subi &0 255     # expected reg: 0 ovf: 255

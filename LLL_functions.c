@@ -55,8 +55,8 @@ lll_err LLL_addi(void){
         lll_send_info("addi reg mode: ",LLL_REG_MODE);
         lll_reg=LLL_load_reg_addr(LLL_REG_MODE);
         lll_sum=LLL_load_mem(lll_reg)+lll_get();
-        lll_send_info("addi sum: ",((lll_sum>256) ? (lll_sum-255) : lll_sum));
-        lll_send_info("add ovf: ",((lll_sum>256) ? 255 : 0));
+        lll_send_info("addi sum: ",((lll_sum>255) ? (lll_sum-255) : lll_sum));
+        lll_send_info("add ovf: ",((lll_sum>255) ? 255 : 0));
     #else
         lll_h8=lll_get();
         lll_reg=LLL_load_reg_addr(LLL_REG_MODE);
@@ -106,11 +106,11 @@ lll_err LLL_sub(void){
 
 
     #if LLL_DEBUG_MODE
-        lll_send_info("sub reg value: ",(lll_ovf ? lll_sum : ((lll_sum < 0)? 0 : lll_sum)));
+        lll_send_info("sub reg value: ",(lll_ovf ? (-lll_sum) : ((lll_sum < 0)? 0 : lll_sum)));
         lll_send_info("sub ovf: ",(lll_ovf ? 255 : ((lll_sum < 0)? (-lll_sum) : 0)));
     #endif
 
-    LLL_save_mem(lll_reg,(lll_ovf ? lll_sum : ((lll_sum < 0)? 0 : lll_sum)));
+    LLL_save_mem(lll_reg,(lll_ovf ? (-lll_sum) : ((lll_sum < 0)? 0 : lll_sum)));
     LLL_save_mem(LLL_getFlagNumber('O'),(lll_ovf ? 255 : ((lll_sum < 0)? (-lll_sum) : 0)));
 
     return inst_err;
