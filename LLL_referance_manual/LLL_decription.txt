@@ -75,7 +75,7 @@ Substract registers from first one
 	INT,REG
 Output on first REG normal: O=0, if lower than 0 then O flag is set to the substraction result REG=0, if lower than -255 REG=substraction on minus
 f.e SUB 3, (registers value)0,255,128 = -383 so O=255 and REG=128  
-INT is the number of registers used in substracting - registers should be one after another
+INT is the number of registers used in substracting - registers should be one after another - when you give it 1 as INT it does nothing
 *****************************************************************************************************************************
 SUBI 	3
 Substract integer from register

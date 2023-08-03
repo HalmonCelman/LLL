@@ -11,6 +11,68 @@ volatile uint8_t lll_c;
 volatile uint8_t lll_h8;
 volatile uint8_t lll_number;
 
+//the most important function - executes one lll function
+lll_err LLL_exec(void){
+    lll_err exec_err; //error status
+
+    exec_err.status=LLL_OK; //default - OK
+
+    lll_c=lll_get(); //read command
+    if(LLL_CHECK_LABEL(lll_c)){
+        lll_set_label(LLL_get32bit());
+        lll_c=lll_get(); // read once more
+    }
+    if(lll_c==0xFF){
+        exec_err.status=LLL_EOP;
+        return exec_err;
+    }
+    #if LLL_DEBUG_MODE==1
+        lll_send_info("MainExec command: ",lll_c); //send debug info
+    #endif // LLL_DEBUG_MODE
+
+    switch(lll_c){ //execute
+        case LLL_ADD:    
+            exec_err=LLL_add();
+        break;
+        case LLL_ADDI:
+            exec_err=LLL_addi();
+        break;
+
+        case LLL_SUB:    
+            exec_err=LLL_sub();
+        break;
+        case LLL_SUBI:
+            exec_err=LLL_subi();
+        break;
+
+        case LLL_MUL:    
+            exec_err=LLL_mul();
+        break;
+        case LLL_MULI:
+            exec_err=LLL_muli();
+        break;
+
+        case LLL_SERI:    
+            exec_err=LLL_seri();
+        break;
+
+        case LLL_OUT:
+            exec_err=LLL_out();
+        break;
+        default:
+            ///if no command executed
+            exec_err.status = LLL_NO_COMMAND; //command not found
+            exec_err.additional = lll_c; //which command wasn't found
+        break;
+    }
+
+    return exec_err;
+}
+
+
+
+
+
 //returns flag number(which is also it's adress)
 uint8_t LLL_getFlagNumber(char flag){
     for(int i=0;i<LLL_FLAG_NUMBER;i++){ //find flag adress
@@ -72,55 +134,7 @@ void LLL_run(char * name){
 }
 
 
-lll_err LLL_exec(void){
-    lll_err exec_err; //error status
 
-    exec_err.status=LLL_OK; //default - OK
-
-    lll_c=lll_get(); //read command
-    if(LLL_CHECK_LABEL(lll_c)){
-        lll_set_label(LLL_get32bit());
-        lll_c=lll_get(); // read once more
-    }
-    if(lll_c==0xFF){
-        exec_err.status=LLL_EOP;
-        return exec_err;
-    }
-    #if LLL_DEBUG_MODE==1
-        lll_send_info("MainExec command: ",lll_c); //send debug info
-    #endif // LLL_DEBUG_MODE
-
-    switch(lll_c){ //execute
-        case LLL_ADD:    
-            exec_err=LLL_add();
-        break;
-        case LLL_ADDI:
-            exec_err=LLL_addi();
-        break;
-
-        case LLL_SUB:    
-            exec_err=LLL_sub();
-        break;
-        case LLL_SUBI:
-            exec_err=LLL_subi();
-        break;
-
-        case LLL_SERI:    
-            exec_err=LLL_seri();
-        break;
-
-        case LLL_OUT:
-            exec_err=LLL_out();
-        break;
-        default:
-            ///if no command executed
-            exec_err.status = LLL_NO_COMMAND; //command not found
-            exec_err.additional = lll_c; //which command wasn't found
-        break;
-    }
-
-    return exec_err;
-}
 
 uint32_t LLL_load_reg_addr(uint8_t mode){
 uint32_t lll_reg=0;

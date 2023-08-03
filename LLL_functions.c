@@ -146,6 +146,77 @@ lll_err LLL_subi(void){
     return inst_err;
 }
 
+lll_err LLL_mul(void){
+    lll_err inst_err;
+    inst_err.status=LLL_OK;
+
+    uint8_t lll_reg;
+    int32_t lll_res=1;
+
+    lll_number=lll_get();
+
+    #if LLL_DEBUG_MODE
+    lll_send_info("mul number: ",lll_number);
+    LLL_CHECK_REG(inst_err);
+    lll_send_info("mul reg mode: ",LLL_REG_MODE);
+    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
+    #else
+    lll_h8 = lll_get();
+    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
+    #endif
+
+    for(int i=0;i<lll_number;i++){
+        lll_res *= LLL_load_mem(lll_reg + i);
+        if(lll_res > 65535){
+            lll_res &= 0xFFFF; //cut to 16 bits
+        }
+    }
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("mul reg value: ",(lll_res & 0xFF));
+        lll_send_info("mul R: ",((lll_res & 0xFF00)>>8));
+    #endif
+
+    LLL_save_mem(lll_reg,(lll_res & 0xFF));
+    LLL_save_mem(LLL_getFlagNumber('R'),((lll_res & 0xFF00)>>8));
+
+    return inst_err;
+}
+
+
+lll_err LLL_muli(void){
+    lll_err inst_err;
+    inst_err.status=LLL_OK;
+
+    uint8_t lll_reg;
+    int16_t lll_res;
+
+    #if LLL_DEBUG_MODE
+
+    LLL_CHECK_REG(inst_err);
+    lll_send_info("muli reg mode: ",LLL_REG_MODE);
+    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
+    #else
+    lll_h8 = lll_get();
+    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
+    #endif
+
+    lll_res = LLL_load_mem(lll_reg) * lll_get();
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("muli reg value: ",(lll_res & 0xFF));
+        lll_send_info("muli R: ",((lll_res & 0xFF00)>>8));
+    #endif
+
+    LLL_save_mem(lll_reg,(lll_res & 0xFF));
+    LLL_save_mem(LLL_getFlagNumber('R'),((lll_res & 0xFF00)>>8));
+
+    return inst_err;
+}
+
+
+
+
 lll_err LLL_seri(void){
 lll_err inst_err;
 

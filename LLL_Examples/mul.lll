@@ -1,0 +1,5 @@
+seri 3 &0 2 3 4
+mul 3 &0
+seri 1 &1 255
+mul 2 &0
+mul 3 &0

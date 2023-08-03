@@ -1,11 +1,11 @@
 ADD 	(x)
 ADDI	(x)
 
-SUB	    ( )
-SUBI	( )
+SUB	    (x)
+SUBI	(x)
 
-MUL	    ( )
-MULI	( )
+MUL	    (x)
+MULI	(x)
 
 DIV 	( )
 DIVI	( )
