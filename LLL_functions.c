@@ -104,13 +104,14 @@ lll_err LLL_sub(void){
         }
     }
 
+
     #if LLL_DEBUG_MODE
-        lll_send_info("sub reg value: ",(lll_ovf ? lll_sum : 0));
-        lll_send_info("sub ovf: ",(lll_ovf ? 255 : lll_sum));
+        lll_send_info("sub reg value: ",(lll_ovf ? lll_sum : ((lll_sum < 0)? 0 : lll_sum)));
+        lll_send_info("sub ovf: ",(lll_ovf ? 255 : ((lll_sum < 0)? (-lll_sum) : 0)));
     #endif
 
-    LLL_save_mem(lll_reg,(lll_ovf ? lll_sum : 0));
-    LLL_save_mem(LLL_getFlagNumber('O'),(lll_ovf ? 255 : lll_sum));
+    LLL_save_mem(lll_reg,(lll_ovf ? lll_sum : ((lll_sum < 0)? 0 : lll_sum)));
+    LLL_save_mem(LLL_getFlagNumber('O'),(lll_ovf ? 255 : ((lll_sum < 0)? (-lll_sum) : 0)));
 
     return inst_err;
 }
@@ -136,11 +137,11 @@ lll_err LLL_subi(void){
 
     #if LLL_DEBUG_MODE
         lll_send_info("subi reg value: ",((lll_sum < 0) ? 0 : lll_sum));
-        lll_send_info("subi ovf: ",((lll_sum < 0) ? lll_sum : 0));
+        lll_send_info("subi ovf: ",((lll_sum < 0) ? (-lll_sum) : 0));
     #endif
 
     LLL_save_mem(lll_reg,((lll_sum < 0) ? 0 : lll_sum));
-    LLL_save_mem(LLL_getFlagNumber('O'),((lll_sum < 0) ? lll_sum : 0));
+    LLL_save_mem(LLL_getFlagNumber('O'),((lll_sum < 0) ? (-lll_sum) : 0));
 
     return inst_err;
 }
