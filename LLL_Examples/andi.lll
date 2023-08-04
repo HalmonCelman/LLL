@@ -1,0 +1,2 @@
+seri 1 &0 3
+andi &0 2       # expected 2

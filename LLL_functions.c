@@ -215,6 +215,193 @@ lll_err LLL_muli(void){
 }
 
 
+lll_err LLL_div(void){
+    lll_err inst_err;
+    inst_err.status=LLL_OK;
+
+    uint8_t lll_reg;
+    uint8_t lll_res;
+    uint16_t lll_div=1;
+
+    lll_number = lll_get();
+    #if LLL_DEBUG_MODE
+    LLL_CHECK_REG(inst_err);
+    lll_send_info("div reg mode: ",LLL_REG_MODE);
+    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
+    #else
+    lll_h8 = lll_get();
+    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
+    #endif
+
+    lll_res = LLL_load_mem(lll_reg);
+
+    for(int i=1;i<lll_number-1;i++){
+        lll_div *= LLL_load_mem(lll_reg+i);
+        if(lll_div > lll_res){
+            #if LLL_DEBUG_MODE
+                lll_send_info("div reg value: ",0);
+                lll_send_info("div R: ",lll_res);
+            #endif
+
+            LLL_save_mem(lll_reg,0);
+            LLL_save_mem(LLL_getFlagNumber('R'),lll_res);
+            
+            return inst_err;
+        }
+    }
+
+    lll_res /= lll_div;
+    lll_div = LLL_load_mem(lll_number-1);
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("div reg value: ",lll_res / lll_div);
+        lll_send_info("div R: ",lll_res % lll_div);
+    #endif
+
+    LLL_save_mem(lll_reg,lll_res / lll_div);
+    LLL_save_mem(LLL_getFlagNumber('R'),lll_res % lll_div);
+
+    return inst_err;
+}
+
+
+lll_err LLL_divi(void){
+    lll_err inst_err;
+    inst_err.status=LLL_OK;
+
+    uint8_t lll_reg;
+    uint8_t lll_res;
+    uint16_t lll_div;
+
+    #if LLL_DEBUG_MODE
+    LLL_CHECK_REG(inst_err);
+    lll_send_info("divi reg mode: ",LLL_REG_MODE);
+    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
+    #else
+    lll_h8 = lll_get();
+    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
+    #endif
+
+    lll_res = LLL_load_mem(lll_reg);
+    lll_div = lll_get();
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("divi reg value: ",lll_res / lll_div);
+        lll_send_info("divi R: ",lll_res % lll_div);
+    #endif
+
+    LLL_save_mem(lll_reg,lll_res / lll_div);
+    LLL_save_mem(LLL_getFlagNumber('R'),lll_res % lll_div);
+
+    return inst_err;
+}
+
+lll_err LLL_and(void){
+    lll_err inst_err;
+    inst_err.status=LLL_OK;
+
+    uint8_t lll_res=0xFF;
+    uint8_t lll_reg;
+
+    lll_number=lll_get();
+    #if LLL_DEBUG_MODE
+    LLL_CHECK_REG(inst_err);
+    lll_send_info("and reg mode: ",LLL_REG_MODE);
+    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
+    #else
+    lll_h8 = lll_get();
+    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
+    #endif
+
+    for(int i=0;i<lll_number;i++){
+        lll_res &= LLL_load_mem(lll_reg + i);
+    }
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("and reg value: ",lll_res);
+    #endif
+
+    LLL_save_mem(lll_reg,lll_res);
+
+
+    return inst_err;
+}
+
+
+lll_err LLL_andi(void){
+    lll_err inst_err;
+    inst_err.status=LLL_OK;
+
+    uint8_t lll_res;
+    uint8_t lll_reg;
+
+    #if LLL_DEBUG_MODE
+    LLL_CHECK_REG(inst_err);
+    lll_send_info("andi reg mode: ",LLL_REG_MODE);
+    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
+    #else
+    lll_h8 = lll_get();
+    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
+    #endif
+
+    lll_res= LLL_load_mem(lll_reg) & lll_get();
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("andi reg value: ",lll_res);
+    #endif
+
+    LLL_save_mem(lll_reg,lll_res);
+
+    return inst_err;
+}
+
+
+lll_err LLL_or(void){
+    lll_err inst_err;
+    inst_err.status=LLL_OK;
+
+    return inst_err;
+}
+
+
+lll_err LLL_ori(void){
+    lll_err inst_err;
+    inst_err.status=LLL_OK;
+
+    return inst_err;
+}
+
+
+lll_err LLL_not(void){
+    lll_err inst_err;
+    inst_err.status=LLL_OK;
+
+    return inst_err;
+}
+
+
+lll_err LLL_inc(void){
+    lll_err inst_err;
+    inst_err.status=LLL_OK;
+
+    return inst_err;
+}
+
+
+lll_err LLL_dec(void){
+    lll_err inst_err;
+    inst_err.status=LLL_OK;
+
+    return inst_err;
+}
+
+
+lll_err LLL_ser(void){
+    lll_err inst_err;
+    inst_err.status=LLL_OK;
+
+    return inst_err;
+}
 
 
 lll_err LLL_seri(void){
@@ -223,8 +410,6 @@ lll_err inst_err;
 uint32_t lll_reg; //adress of register
 
 inst_err.status=LLL_OK;
-
-//main instruction code
 
 #if LLL_DEBUG_MODE==1
     lll_number=lll_get(); //load number
@@ -245,9 +430,105 @@ for(int i=0;i<lll_number;i++){
     #endif
     LLL_save_mem(lll_reg+i,lll_h8);
 }
-/////////////////////////////////////////////
 return inst_err;
 }
+
+lll_err LLL_ljmp(void){
+    lll_err inst_err;
+    inst_err.status=LLL_OK;
+
+    return inst_err;
+}
+
+
+lll_err LLL_jmp(void){
+    lll_err inst_err;
+    inst_err.status=LLL_OK;
+
+    return inst_err;
+}
+
+
+lll_err LLL_ret(void){
+    lll_err inst_err;
+    inst_err.status=LLL_OK;
+
+    return inst_err;
+}
+
+
+lll_err LLL_cmp(void){
+    lll_err inst_err;
+    inst_err.status=LLL_OK;
+
+    return inst_err;
+}
+
+
+lll_err LLL_cmpi(void){
+    lll_err inst_err;
+    inst_err.status=LLL_OK;
+
+    return inst_err;
+}
+
+
+lll_err LLL_seq(void){
+    lll_err inst_err;
+    inst_err.status=LLL_OK;
+
+    return inst_err;
+}
+
+
+lll_err LLL_deq(void){
+    lll_err inst_err;
+    inst_err.status=LLL_OK;
+
+    return inst_err;
+}
+
+
+lll_err LLL_slo(void){
+    lll_err inst_err;
+    inst_err.status=LLL_OK;
+
+    return inst_err;
+}
+
+
+lll_err LLL_dlo(void){
+    lll_err inst_err;
+    inst_err.status=LLL_OK;
+
+    return inst_err;
+}
+
+
+lll_err LLL_sgr(void){
+    lll_err inst_err;
+    inst_err.status=LLL_OK;
+
+    return inst_err;
+}
+
+
+lll_err LLL_dgr(void){
+    lll_err inst_err;
+    inst_err.status=LLL_OK;
+
+    return inst_err;
+}
+
+
+lll_err LLL_in(void){
+    lll_err inst_err;
+    inst_err.status=LLL_OK;
+
+    return inst_err;
+}
+
+
 
 lll_err LLL_out(void){
     lll_err inst_err;
@@ -255,5 +536,14 @@ lll_err LLL_out(void){
     
     inst_err = lll_stream_out(LLL_get32bit(),LLL_load_mem(LLL_getFlagNumber('A')));
 
+    return inst_err;
+}
+
+lll_err LLL_exit(void){
+    #if LLL_DEBUG_MODE
+        lll_send_info("exit: ",0);
+    #endif
+    lll_err inst_err;
+    inst_err.status=LLL_EOP;
     return inst_err;
 }

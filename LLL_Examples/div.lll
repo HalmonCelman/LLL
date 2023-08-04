@@ -1,0 +1,2 @@
+seri 4 &0 150 5 6 3
+div 4 &0            # expected reg:1 R:2

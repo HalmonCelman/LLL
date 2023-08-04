@@ -1,0 +1,2 @@
+seri 3 &0 7 3 2
+and 3 &0            #expected reg: 2

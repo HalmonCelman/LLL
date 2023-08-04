@@ -7,11 +7,11 @@ SUBI	(x)
 MUL	    (x)
 MULI	(x)
 
-DIV 	( )
-DIVI	( )
+DIV 	(x)
+DIVI	(x)
 
-AND	    ( )
-ANDI	( )
+AND	    (x)
+ANDI	(x)
 
 OR  	( )
 ORI	    ( )
@@ -26,6 +26,7 @@ SERI	(x)
 
 LJMP	( )
 JMP	    ( )
+RET     ( )
 
 CMP  	( )
 CMPI    ( )
@@ -41,3 +42,4 @@ IN	    ( )
 
 OUT	    ( )
 
+EXIT    (x)
