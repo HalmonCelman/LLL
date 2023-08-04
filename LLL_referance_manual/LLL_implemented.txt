@@ -13,13 +13,13 @@ DIVI	(x)
 AND	    (x)
 ANDI	(x)
 
-OR  	( )
-ORI	    ( )
+OR  	(x)
+ORI	    (x)
 
-NOT	    ( )
+NOT	    (x)
 
-INC	    ( )
-DEC 	( )
+INC	    (x)
+DEC 	(x)
 
 SER	    ( )
 SERI	(x)

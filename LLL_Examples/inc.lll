@@ -1,0 +1,3 @@
+seri 1 &0 254
+inc &0          # expected reg: 255  ovf:0
+inc &0          # expected reg: 0    ovf:1

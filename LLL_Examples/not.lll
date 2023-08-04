@@ -1,0 +1,2 @@
+seri 1 &0 240   # 0xF0
+not &0          # expected reg: 15 (0x0F)

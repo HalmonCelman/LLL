@@ -1,0 +1,2 @@
+seri 1 &0 129
+ori &0 15       # expected reg: 143

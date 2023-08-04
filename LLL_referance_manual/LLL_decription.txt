@@ -156,7 +156,7 @@ Output: value incremented by 1 in this register if OVF occure then O flag is set
 DEC		14
 Decrement value in register
 	REG
-Output on REG, when result is -1 then REG=0 and M=1
+Output on REG, when result is -1 then REG=0 and 0=1
 *****************************************************************************************************************************
 SER		15
 Sets value in registers to value of another registers

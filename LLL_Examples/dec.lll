@@ -1,0 +1,4 @@
+seri 1 &0 2
+dec &0          # expected reg: 1 ovf:0 
+dec &0          # expected reg: 0 ovf:0
+dec &0          # expected reg: 0 ovf:1

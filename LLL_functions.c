@@ -12,17 +12,13 @@ lll_err LLL_add(void){
     uint8_t lll_ovf=0;
     uint16_t lll_sum=0;
 
+    lll_number=lll_get();
     #if LLL_DEBUG_MODE
-        lll_number=lll_get();
-        lll_send_info("add number: ",lll_number);
         LLL_CHECK_REG(inst_err);
-        lll_send_info("add reg mode: ",LLL_REG_MODE);
-        lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
     #else
-        lll_number=lll_get();
         lll_h8=lll_get();
-        lll_reg1=LLL_load_reg_addr(LLL_REG_MODE);
     #endif
+    lll_reg=LLL_load_reg_addr(LLL_REG_MODE);
 
     for(int i=0;i<lll_number;i++){
         lll_sum += LLL_load_mem(lll_reg+i);
@@ -51,17 +47,12 @@ lll_err LLL_addi(void){
     uint16_t lll_sum=0;
 
     #if LLL_DEBUG_MODE
-        LLL_CHECK_REG(inst_err);
-        lll_send_info("addi reg mode: ",LLL_REG_MODE);
-        lll_reg=LLL_load_reg_addr(LLL_REG_MODE);
-        lll_sum=LLL_load_mem(lll_reg)+lll_get();
-        lll_send_info("addi sum: ",((lll_sum>255) ? (lll_sum-255) : lll_sum));
-        lll_send_info("add ovf: ",((lll_sum>255) ? 255 : 0));
+        LLL_CHECK_REG(inst_err);        
     #else
         lll_h8=lll_get();
-        lll_reg=LLL_load_reg_addr(LLL_REG_MODE);
-        lll_sum=LLL_load_mem(lll_reg)+lll_get();
     #endif
+    lll_reg=LLL_load_reg_addr(LLL_REG_MODE);
+    lll_sum=LLL_load_mem(lll_reg)+lll_get();
 
     if(lll_sum>255){
         lll_sum-=255;
@@ -69,6 +60,12 @@ lll_err LLL_addi(void){
     }else{
         LLL_save_mem(LLL_getFlagNumber('O'), 0);
     }
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("addi sum: ",lll_sum);
+        lll_send_info("add ovf: ",((lll_sum>255) ? 255 : 0));
+    #endif
+
     LLL_save_mem(lll_reg, (uint8_t)lll_sum);
 
     return inst_err;
@@ -85,14 +82,11 @@ lll_err LLL_sub(void){
     lll_number=lll_get();
 
     #if LLL_DEBUG_MODE
-    lll_send_info("sub number: ",lll_number);
     LLL_CHECK_REG(inst_err);
-    lll_send_info("sub reg mode: ",LLL_REG_MODE);
-    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
     #else
     lll_h8 = lll_get();
-    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
     #endif
+    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
 
     lll_sum = LLL_load_mem(lll_reg);
 
@@ -126,12 +120,10 @@ lll_err LLL_subi(void){
 
     #if LLL_DEBUG_MODE
     LLL_CHECK_REG(inst_err);
-    lll_send_info("subi reg mode: ",LLL_REG_MODE);
-    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
     #else
     lll_h8 = lll_get();
-    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
     #endif
+    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
 
     lll_sum = LLL_load_mem(lll_reg) - lll_get();
 
@@ -156,14 +148,11 @@ lll_err LLL_mul(void){
     lll_number=lll_get();
 
     #if LLL_DEBUG_MODE
-    lll_send_info("mul number: ",lll_number);
     LLL_CHECK_REG(inst_err);
-    lll_send_info("mul reg mode: ",LLL_REG_MODE);
-    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
     #else
     lll_h8 = lll_get();
-    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
     #endif
+    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
 
     for(int i=0;i<lll_number;i++){
         lll_res *= LLL_load_mem(lll_reg + i);
@@ -192,14 +181,11 @@ lll_err LLL_muli(void){
     int16_t lll_res;
 
     #if LLL_DEBUG_MODE
-
     LLL_CHECK_REG(inst_err);
-    lll_send_info("muli reg mode: ",LLL_REG_MODE);
-    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
     #else
     lll_h8 = lll_get();
-    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
     #endif
+    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
 
     lll_res = LLL_load_mem(lll_reg) * lll_get();
 
@@ -226,12 +212,10 @@ lll_err LLL_div(void){
     lll_number = lll_get();
     #if LLL_DEBUG_MODE
     LLL_CHECK_REG(inst_err);
-    lll_send_info("div reg mode: ",LLL_REG_MODE);
-    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
     #else
     lll_h8 = lll_get();
-    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
     #endif
+    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
 
     lll_res = LLL_load_mem(lll_reg);
 
@@ -251,7 +235,7 @@ lll_err LLL_div(void){
     }
 
     lll_res /= lll_div;
-    lll_div = LLL_load_mem(lll_number-1);
+    lll_div = LLL_load_mem(lll_reg+lll_number-1);
 
     #if LLL_DEBUG_MODE
         lll_send_info("div reg value: ",lll_res / lll_div);
@@ -275,12 +259,10 @@ lll_err LLL_divi(void){
 
     #if LLL_DEBUG_MODE
     LLL_CHECK_REG(inst_err);
-    lll_send_info("divi reg mode: ",LLL_REG_MODE);
-    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
     #else
     lll_h8 = lll_get();
-    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
     #endif
+    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
 
     lll_res = LLL_load_mem(lll_reg);
     lll_div = lll_get();
@@ -306,12 +288,10 @@ lll_err LLL_and(void){
     lll_number=lll_get();
     #if LLL_DEBUG_MODE
     LLL_CHECK_REG(inst_err);
-    lll_send_info("and reg mode: ",LLL_REG_MODE);
-    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
     #else
     lll_h8 = lll_get();
-    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
     #endif
+    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
 
     for(int i=0;i<lll_number;i++){
         lll_res &= LLL_load_mem(lll_reg + i);
@@ -337,12 +317,10 @@ lll_err LLL_andi(void){
 
     #if LLL_DEBUG_MODE
     LLL_CHECK_REG(inst_err);
-    lll_send_info("andi reg mode: ",LLL_REG_MODE);
-    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
     #else
     lll_h8 = lll_get();
-    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
     #endif
+    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
 
     lll_res= LLL_load_mem(lll_reg) & lll_get();
 
@@ -360,6 +338,29 @@ lll_err LLL_or(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
 
+    uint8_t lll_res=0;
+    uint8_t lll_reg;
+
+    lll_number=lll_get();
+
+    #if LLL_DEBUG_MODE
+    LLL_CHECK_REG(inst_err);
+    #else
+    lll_h8 = lll_get();
+    #endif
+
+    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
+
+    for(int i=0;i<lll_number;i++){
+        lll_res |= LLL_load_mem(lll_reg + i);
+    }
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("or reg value: ",lll_res);
+    #endif
+
+    LLL_save_mem(lll_reg,lll_res);
+    
     return inst_err;
 }
 
@@ -367,6 +368,24 @@ lll_err LLL_or(void){
 lll_err LLL_ori(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
+
+    uint8_t lll_res;
+    uint8_t lll_reg;
+
+    #if LLL_DEBUG_MODE
+    LLL_CHECK_REG(inst_err);
+    #else
+    lll_h8 = lll_get();
+    #endif
+    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
+
+    lll_res = LLL_load_mem(lll_reg) | lll_get();
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("ori reg value: ",lll_res);
+    #endif
+
+    LLL_save_mem(lll_reg,lll_res);
 
     return inst_err;
 }
@@ -376,6 +395,23 @@ lll_err LLL_not(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
 
+    uint8_t lll_reg,lll_res;
+
+    #if LLL_DEBUG_MODE
+    LLL_CHECK_REG(inst_err);
+    #else
+    lll_h8 = lll_get();
+    #endif
+    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
+
+    lll_res = ~LLL_load_mem(lll_reg);
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("not reg value: ",lll_res);
+    #endif
+
+    LLL_save_mem(lll_reg,lll_res);
+
     return inst_err;
 }
 
@@ -384,6 +420,31 @@ lll_err LLL_inc(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
 
+    uint8_t lll_reg,lll_res;
+    uint8_t lll_ovf=0;
+
+    #if LLL_DEBUG_MODE
+    LLL_CHECK_REG(inst_err);
+    #else
+    lll_h8 = lll_get();
+    #endif
+    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
+
+    lll_res = LLL_load_mem(lll_reg);
+    if(lll_res == 255 ){
+        lll_ovf = 1;
+        lll_res = 0;
+    }else{
+        lll_res++;
+    }
+    #if LLL_DEBUG_MODE
+        lll_send_info("inc reg value: ",lll_res);
+        lll_send_info("inc ovf value: ",lll_ovf);
+    #endif
+
+    LLL_save_mem(lll_reg,lll_res);
+    LLL_save_mem(LLL_getFlagNumber('O'),lll_ovf);
+    
     return inst_err;
 }
 
@@ -391,6 +452,31 @@ lll_err LLL_inc(void){
 lll_err LLL_dec(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
+
+    uint8_t lll_reg,lll_res;
+    uint8_t lll_ovf=0;
+
+    #if LLL_DEBUG_MODE
+    LLL_CHECK_REG(inst_err);
+    #else
+    lll_h8 = lll_get();
+    #endif
+    lll_reg = LLL_load_reg_addr(LLL_REG_MODE);
+
+    lll_res = LLL_load_mem(lll_reg);
+    if(lll_res == 0 ){
+        lll_ovf = 1;
+        lll_res = 0;
+    }else{
+        lll_res--;
+    }
+    #if LLL_DEBUG_MODE
+        lll_send_info("dec reg value: ",lll_res);
+        lll_send_info("dec ovf value: ",lll_ovf);
+    #endif
+
+    LLL_save_mem(lll_reg,lll_res);
+    LLL_save_mem(LLL_getFlagNumber('O'),lll_ovf);
 
     return inst_err;
 }
