@@ -588,6 +588,18 @@ lll_err LLL_ljmp(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
 
+    uint32_t lll_label_number=LLL_get32bit();
+    uint64_t lll_label_adress=lll_get_label(lll_label_number);
+
+    lll_last_jump=lll_getPosition();
+    lll_goTo(lll_label_adress);
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("ljmp label number: ",lll_label_number);
+        lll_send_info("ljmp jump position: ",lll_label_adress);
+        lll_send_info("ljmp last position: ",lll_last_jump);
+    #endif
+
     return inst_err;
 }
 
@@ -597,12 +609,12 @@ lll_err LLL_jmp(void){
     inst_err.status=LLL_OK;
 
     uint64_t lll_jump=LLL_get64bit();
-    lll_last_jump=lll_getPosition;
+    lll_last_jump=lll_getPosition();
     lll_goTo(lll_jump);
 
     #if LLL_DEBUG_MODE
-        lll_send_info("jump position: ",lll_jump);
-        lll_send_info("last jump position: ",lll_last_jump);
+        lll_send_info("jmp jump position: ",lll_jump);
+        lll_send_info("jmp last jump position: ",lll_last_jump);
     #endif
 
     return inst_err;

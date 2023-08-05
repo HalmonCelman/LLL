@@ -1,0 +1,7 @@
+jmp 34
+seri 2 &0 1 2    # 2. returns here
+add 2 &0
+jmp 42          # 3. jump to exit
+add 2 &0        # 1. jump here
+ret
+exit

@@ -1,0 +1,4 @@
+jmp 25
+ser 2 &0 1 2
+add 2 &0
+add 2 &0 # jumps to this command

@@ -98,6 +98,7 @@ extern uint8_t lll_get(void);
 extern void lll_send_info(char*, uint32_t);
 extern void lll_throw_error(uint8_t,char *,uint8_t);
 extern void lll_set_label(uint32_t);
+extern uint64_t lll_get_label(uint32_t);
 extern void lll_goTo(uint64_t);
 extern uint64_t lll_getPosition(void);
 

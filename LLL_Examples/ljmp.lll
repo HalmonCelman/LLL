@@ -1,0 +1,5 @@
+seri 3 &0 1 2 3
+:0
+add 2 &0
+ret         # 1. no jump - ignored 2. jump to end
+ljmp 0      # jump to :0      
