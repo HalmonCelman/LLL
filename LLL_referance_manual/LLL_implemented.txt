@@ -21,12 +21,12 @@ NOT	    (x)
 INC	    (x)
 DEC 	(x)
 
-SER	    ( )
+SER	    (x)
 SERI	(x)
 
 LJMP	( )
-JMP	    ( )
-RET     ( )
+JMP	    (x)
+RET     (x)
 
 CMP  	( )
 CMPI    ( )

@@ -67,6 +67,7 @@ extern uint64_t LLL_LABEL[LLL_LABEL_NUMBER];
 extern volatile uint8_t lll_h8; //helpful 8bit varialibe
 extern volatile uint8_t lll_number; //how many registers to copy itp
 extern volatile uint8_t lll_c; //command
+extern volatile uint64_t lll_last_jump;
 ///functions
 
 void LLL_init(void);
@@ -80,6 +81,7 @@ void LLL_save_mem(uint32_t,uint8_t);
 //additional
 uint8_t LLL_getFlagNumber(char);
 uint32_t LLL_get32bit(void);
+uint64_t LLL_get64bit(void);
 
 //driver functions - this functions should be specified in driver for device
 #if LLL_USE_EXTERNAL_MEMORY
@@ -96,6 +98,9 @@ extern uint8_t lll_get(void);
 extern void lll_send_info(char*, uint32_t);
 extern void lll_throw_error(uint8_t,char *,uint8_t);
 extern void lll_set_label(uint32_t);
+extern void lll_goTo(uint64_t);
+extern uint64_t lll_getPosition(void);
+
 //streams for device
 extern lll_err lll_stream_out(uint32_t,uint8_t);
 

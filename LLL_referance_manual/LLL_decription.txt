@@ -179,11 +179,11 @@ There is no output
 *****************************************************************************************************************************
 JMP		18
 It's an absolute jump to the offset of file
-	adress(32 bits value)
+	(64-bits value)
 There is no output
 *****************************************************************************************************************************
 RET		19
-Return to the function after last jump
+Return to the function after last jump - ignored if there was no jump yet
 *****************************************************************************************************************************
 CMP		20
 Compare two registers

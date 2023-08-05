@@ -3,6 +3,9 @@
 
 #include "LLL.h"
 
+#define TEXT(x) #x
+#define EXPAND(x) TEXT(x)
+
 lll_err LLL_add(void);
 lll_err LLL_addi(void);
 lll_err LLL_sub(void);

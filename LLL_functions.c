@@ -4,6 +4,36 @@
 
 #include "LLL_functions.h"
 
+#if LLL_DEBUG_MODE
+
+static void copyString(char* dest, char* source){
+    while(*source){
+        (*dest++)=*source++;
+    }
+}
+
+
+char* itoa(int i, char b[]){
+    char const digit[] = "0123456789";
+    char* p = b;
+    if(i<0){
+        *p++ = '-';
+        i *= -1;
+    }
+    int shifter = i;
+    do{ //Move to where representation ends
+        ++p;
+        shifter = shifter/10;
+    }while(shifter);
+    do{ //Move back, inserting digits as u go
+        *--p = digit[i%10];
+        i = i/10;
+    }while(i);
+    return b;
+}
+
+#endif
+
 lll_err LLL_add(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
@@ -75,7 +105,7 @@ lll_err LLL_sub(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
 
-    uint8_t lll_reg;
+    uint32_t lll_reg;
     uint8_t lll_ovf=0;
     int16_t lll_sum;
 
@@ -115,7 +145,7 @@ lll_err LLL_subi(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
 
-    uint8_t lll_reg;
+    uint32_t lll_reg;
     int16_t lll_sum;
 
     #if LLL_DEBUG_MODE
@@ -142,7 +172,7 @@ lll_err LLL_mul(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
 
-    uint8_t lll_reg;
+    uint32_t lll_reg;
     int32_t lll_res=1;
 
     lll_number=lll_get();
@@ -177,7 +207,7 @@ lll_err LLL_muli(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
 
-    uint8_t lll_reg;
+    uint32_t lll_reg;
     int16_t lll_res;
 
     #if LLL_DEBUG_MODE
@@ -205,7 +235,7 @@ lll_err LLL_div(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
 
-    uint8_t lll_reg;
+    uint32_t lll_reg;
     uint8_t lll_res;
     uint16_t lll_div=1;
 
@@ -253,7 +283,7 @@ lll_err LLL_divi(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
 
-    uint8_t lll_reg;
+    uint32_t lll_reg;
     uint8_t lll_res;
     uint16_t lll_div;
 
@@ -283,7 +313,7 @@ lll_err LLL_and(void){
     inst_err.status=LLL_OK;
 
     uint8_t lll_res=0xFF;
-    uint8_t lll_reg;
+    uint32_t lll_reg;
 
     lll_number=lll_get();
     #if LLL_DEBUG_MODE
@@ -313,7 +343,7 @@ lll_err LLL_andi(void){
     inst_err.status=LLL_OK;
 
     uint8_t lll_res;
-    uint8_t lll_reg;
+    uint32_t lll_reg;
 
     #if LLL_DEBUG_MODE
     LLL_CHECK_REG(inst_err);
@@ -339,7 +369,7 @@ lll_err LLL_or(void){
     inst_err.status=LLL_OK;
 
     uint8_t lll_res=0;
-    uint8_t lll_reg;
+    uint32_t lll_reg;
 
     lll_number=lll_get();
 
@@ -370,7 +400,7 @@ lll_err LLL_ori(void){
     inst_err.status=LLL_OK;
 
     uint8_t lll_res;
-    uint8_t lll_reg;
+    uint32_t lll_reg;
 
     #if LLL_DEBUG_MODE
     LLL_CHECK_REG(inst_err);
@@ -395,7 +425,8 @@ lll_err LLL_not(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
 
-    uint8_t lll_reg,lll_res;
+    uint32_t lll_reg;
+    uint8_t lll_res;
 
     #if LLL_DEBUG_MODE
     LLL_CHECK_REG(inst_err);
@@ -420,7 +451,8 @@ lll_err LLL_inc(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
 
-    uint8_t lll_reg,lll_res;
+    uint32_t lll_reg;
+    uint8_t lll_res;
     uint8_t lll_ovf=0;
 
     #if LLL_DEBUG_MODE
@@ -453,7 +485,8 @@ lll_err LLL_dec(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
 
-    uint8_t lll_reg,lll_res;
+    uint32_t lll_reg;
+    uint8_t lll_res;
     uint8_t lll_ovf=0;
 
     #if LLL_DEBUG_MODE
@@ -485,6 +518,38 @@ lll_err LLL_dec(void){
 lll_err LLL_ser(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
+    uint8_t lll_value;
+    uint32_t lll_reg1,lll_reg2;
+
+    lll_number=lll_get();
+
+    #if LLL_DEBUG_MODE
+    LLL_CHECK_REG(inst_err);
+    #else
+    lll_h8 = lll_get();
+    #endif
+
+    lll_reg1 = LLL_load_reg_addr(LLL_REG_MODE);
+
+    #if LLL_DEBUG_MODE
+    LLL_CHECK_REG(inst_err);
+    #else
+    lll_h8 = lll_get();
+    #endif
+    lll_reg2 = LLL_load_reg_addr(LLL_REG_MODE);
+
+    for(int i=0;i<lll_number;i++){
+        lll_value=LLL_load_mem(lll_reg2+i);
+        LLL_save_mem(lll_reg1+i,lll_value);
+        #if LLL_DEBUG_MODE
+            char tmpbuff[10]={"          "};
+            copyString(tmpbuff,"ser ");
+            copyString(&tmpbuff[7],": ");
+            tmpbuff[9]=0;
+            itoa(lll_reg1+i,&tmpbuff[4]);
+            lll_send_info(tmpbuff,lll_value);
+        #endif
+    }
 
     return inst_err;
 }
@@ -531,6 +596,15 @@ lll_err LLL_jmp(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
 
+    uint64_t lll_jump=LLL_get64bit();
+    lll_last_jump=lll_getPosition;
+    lll_goTo(lll_jump);
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("jump position: ",lll_jump);
+        lll_send_info("last jump position: ",lll_last_jump);
+    #endif
+
     return inst_err;
 }
 
@@ -538,6 +612,14 @@ lll_err LLL_jmp(void){
 lll_err LLL_ret(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
+
+    if(lll_last_jump != 0){
+        lll_goTo(lll_last_jump);
+    }
+
+    #if LLL_DEBUG_MODE
+        lll_send_info(lll_last_jump ? "ret to: " : "ret ignored ",lll_last_jump);
+    #endif
 
     return inst_err;
 }

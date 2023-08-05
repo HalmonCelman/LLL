@@ -1,6 +1,8 @@
 #include "LLL.h"
 #include "LLL_functions.h"
 
+volatile uint64_t lll_last_jump;
+
 ///declarations of buffers due to gcc 12 
 uint8_t LLL_FAST_MEM[LLL_FAST_MEM_SIZE+LLL_FLAG_NUMBER];
 uint8_t LLL_COMM_BUFF[LLL_COMM_BUFF_SIZE];
@@ -95,6 +97,14 @@ uint32_t LLL_get32bit(void){
         val32 = (val32<<8) + lll_get();
     }
     return val32;
+}
+
+uint64_t LLL_get64bit(void){
+    uint64_t val64=0;
+    for(int i=0;i<8;i++){ //read adress
+        val64 = (val64<<8) + lll_get();
+    }
+    return val64;
 }
 
 
