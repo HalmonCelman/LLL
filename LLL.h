@@ -67,6 +67,7 @@ extern uint64_t LLL_LABEL[LLL_LABEL_NUMBER];
 extern volatile uint8_t lll_h8; //helpful 8bit varialibe
 extern volatile uint8_t lll_number; //how many registers to copy itp
 extern volatile uint8_t lll_c; //command
+extern volatile uint8_t lll_skip; 
 extern volatile uint64_t lll_last_jump;
 ///functions
 

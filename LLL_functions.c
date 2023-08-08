@@ -640,6 +640,32 @@ lll_err LLL_ret(void){
 lll_err LLL_cmp(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
+    
+    uint32_t lll_reg1,lll_reg2;
+    uint8_t val1,val2;
+
+    #if LLL_DEBUG_MODE
+        LLL_CHECK_REG(inst_err);
+        lll_reg1=LLL_load_reg_addr(LLL_REG_MODE);
+        LLL_CHECK_REG(inst_err);
+        lll_reg2=LLL_load_reg_addr(LLL_REG_MODE);
+    #else
+        lll_h8=lll_get();
+        lll_reg1=LLL_load_reg_addr(LLL_REG_MODE);
+        lll_h8=lll_get();
+        lll_reg2=LLL_load_reg_addr(LLL_REG_MODE);
+    #endif
+
+    val1=LLL_load_mem(lll_reg1);
+    val2=LLL_load_mem(lll_reg2);
+    
+    LLL_save_mem(LLL_getFlagNumber('R'),((val1>val2)?COMP_GR:((val1<val2)?COMP_LO:COMP_EQ))); //if > then 2, < then 0, == then 1
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("cmp val1: ",val1);
+        lll_send_info("cmp val2: ",val2);
+        lll_send_info("cmp R: ",((val1>val2)?COMP_GR:((val1<val2)?COMP_LO:COMP_EQ)));
+    #endif
 
     return inst_err;
 }
@@ -649,6 +675,28 @@ lll_err LLL_cmpi(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
 
+    uint32_t lll_reg;
+    uint8_t val1,val2;
+
+    #if LLL_DEBUG_MODE
+        LLL_CHECK_REG(inst_err);
+    #else
+        lll_h8=lll_get();
+    #endif
+
+    lll_reg=LLL_load_reg_addr(LLL_REG_MODE);
+
+    val1=LLL_load_mem(lll_reg);
+    val2=lll_get();
+    
+    LLL_save_mem(LLL_getFlagNumber('R'),((val1>val2)?COMP_GR:((val1<val2)?COMP_LO:COMP_EQ))); //if > then 2, < then 0, == then 1
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("cmpi val1: ",val1);
+        lll_send_info("cmpi val2: ",val2);
+        lll_send_info("cmpi R: ",((val1>val2)?COMP_GR:((val1<val2)?COMP_LO:COMP_EQ)));
+    #endif
+
     return inst_err;
 }
 
@@ -657,6 +705,10 @@ lll_err LLL_seq(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
 
+    if(LLL_load_mem(LLL_getFlagNumber('R'))==COMP_EQ){
+        lll_skip=1;
+    }
+    
     return inst_err;
 }
 
@@ -664,6 +716,10 @@ lll_err LLL_seq(void){
 lll_err LLL_deq(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
+
+    if(LLL_load_mem(LLL_getFlagNumber('R'))!=COMP_EQ){
+        lll_skip=1;
+    }
 
     return inst_err;
 }
@@ -673,6 +729,10 @@ lll_err LLL_slo(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
 
+    if(LLL_load_mem(LLL_getFlagNumber('R'))==COMP_LO){
+        lll_skip=1;
+    }
+
     return inst_err;
 }
 
@@ -680,6 +740,10 @@ lll_err LLL_slo(void){
 lll_err LLL_dlo(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
+
+    if(LLL_load_mem(LLL_getFlagNumber('R'))!=COMP_LO){
+        lll_skip=1;
+    }
 
     return inst_err;
 }
@@ -689,6 +753,10 @@ lll_err LLL_sgr(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
 
+    if(LLL_load_mem(LLL_getFlagNumber('R'))==COMP_GR){
+        lll_skip=1;
+    }
+
     return inst_err;
 }
 
@@ -696,6 +764,10 @@ lll_err LLL_sgr(void){
 lll_err LLL_dgr(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
+
+    if(LLL_load_mem(LLL_getFlagNumber('R'))!=COMP_GR){
+        lll_skip=1;
+    }
 
     return inst_err;
 }

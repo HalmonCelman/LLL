@@ -1,0 +1,4 @@
+seri 3 &0 1 2 3
+cmp &0 &1       # expected val1:1 val2:2 R:0
+cmp &2 &1       # expected val1:3 val2:2 R:2
+cmp &0 &0       # expected val1:1 val2:1 R:1

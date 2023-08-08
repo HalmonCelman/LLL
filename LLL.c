@@ -12,6 +12,7 @@ const uint8_t LLL_FLAG_MAP[LLL_FLAG_NUMBER]={'O','A','R'};
 volatile uint8_t lll_c;
 volatile uint8_t lll_h8;
 volatile uint8_t lll_number;
+volatile uint8_t lll_skip;
 
 //the most important function - executes one lll function
 lll_err LLL_exec(void){
@@ -24,49 +25,77 @@ lll_err LLL_exec(void){
         lll_set_label(LLL_get32bit());
         lll_c=lll_get(); // read once more
     }
-    #if LLL_DEBUG_MODE==1
-        lll_send_info("MainExec command: ",lll_c); //send debug info
-    #endif // LLL_DEBUG_MODE
+    
+    if(lll_skip){
+        uint8_t bytesToSkip=6;
+        //untypical functions - another number of bytes in parameters
+        switch(lll_c){
+            case LLL_NOT:                           // NOT, INC, DEC, OUT - one register - 5 bytes
+            case LLL_INC:
+            case LLL_DEC:   
+            case LLL_OUT:   bytesToSkip=5;          break; // one REG
+            case LLL_SER:   bytesToSkip=11;         break; // INT and two REGs
+            case LLL_SERI:  bytesToSkip=lll_get()+5;break; // REG and ints
+            case LLL_LJMP:  bytesToSkip=4;          break; // just label number
+            case LLL_JMP:   bytesToSkip=8;          break; // absolute offset
+            case LLL_CMP:   bytesToSkip=10;         break; // two REGs
+            case LLL_SEQ:
+            case LLL_DEQ:
+            case LLL_SLO:
+            case LLL_DLO:
+            case LLL_SGR:
+            case LLL_DGR:
+            case LLL_RET:
+            case LLL_EXIT:  bytesToSkip=0;          break; // no parameters
+        }
 
-    switch(lll_c){ //execute
-        case LLL_ADD:  exec_err=LLL_add();  break;
-        case LLL_ADDI: exec_err=LLL_addi(); break;
-        case LLL_SUB:  exec_err=LLL_sub();  break;
-        case LLL_SUBI: exec_err=LLL_subi(); break;
-        case LLL_MUL:  exec_err=LLL_mul();  break;
-        case LLL_MULI: exec_err=LLL_muli(); break;
-        case LLL_DIV:  exec_err=LLL_div();  break;
-        case LLL_DIVI: exec_err=LLL_divi(); break;
-        case LLL_AND:  exec_err=LLL_and();  break;
-        case LLL_ANDI: exec_err=LLL_andi(); break;
-        case LLL_OR:   exec_err=LLL_or();   break;
-        case LLL_ORI:  exec_err=LLL_ori();  break;
-        case LLL_NOT:  exec_err=LLL_not();  break;
-        case LLL_INC:  exec_err=LLL_inc();  break;
-        case LLL_DEC:  exec_err=LLL_dec();  break;
-        case LLL_SER:  exec_err=LLL_ser();  break;
-        case LLL_SERI: exec_err=LLL_seri(); break;
-        case LLL_LJMP: exec_err=LLL_ljmp(); break;
-        case LLL_JMP:  exec_err=LLL_jmp();  break;
-        case LLL_RET:  exec_err=LLL_ret();  break;
-        case LLL_CMP:  exec_err=LLL_cmp();  break;
-        case LLL_CMPI: exec_err=LLL_cmpi(); break;
-        case LLL_SEQ:  exec_err=LLL_seq();  break;
-        case LLL_DEQ:  exec_err=LLL_deq();  break;
-        case LLL_SLO:  exec_err=LLL_slo();  break;
-        case LLL_DLO:  exec_err=LLL_dlo();  break;
-        case LLL_SGR:  exec_err=LLL_sgr();  break;
-        case LLL_DGR:  exec_err=LLL_dgr();  break;
-        case LLL_IN:   exec_err=LLL_in();   break;
-        case LLL_OUT:  exec_err=LLL_out();  break;
-        case LLL_EXIT: exec_err=LLL_exit(); break;
-        default:
-            ///if no command executed
-            exec_err.status = LLL_NO_COMMAND; //command not found
-            exec_err.additional = lll_c; //which command wasn't found
-        break;
+        if(bytesToSkip)
+            lll_goTo(lll_getPosition()+bytesToSkip);
+        lll_skip=0;
+    }else{
+        #if LLL_DEBUG_MODE==1
+            lll_send_info("MainExec command: ",lll_c); //send debug info
+        #endif // LLL_DEBUG_MODE
+
+        switch(lll_c){ //execute
+            case LLL_ADD:  exec_err=LLL_add();  break;
+            case LLL_ADDI: exec_err=LLL_addi(); break;
+            case LLL_SUB:  exec_err=LLL_sub();  break;
+            case LLL_SUBI: exec_err=LLL_subi(); break;
+            case LLL_MUL:  exec_err=LLL_mul();  break;
+            case LLL_MULI: exec_err=LLL_muli(); break;
+            case LLL_DIV:  exec_err=LLL_div();  break;
+            case LLL_DIVI: exec_err=LLL_divi(); break;
+            case LLL_AND:  exec_err=LLL_and();  break;
+            case LLL_ANDI: exec_err=LLL_andi(); break;
+            case LLL_OR:   exec_err=LLL_or();   break;
+            case LLL_ORI:  exec_err=LLL_ori();  break;
+            case LLL_NOT:  exec_err=LLL_not();  break;
+            case LLL_INC:  exec_err=LLL_inc();  break;
+            case LLL_DEC:  exec_err=LLL_dec();  break;
+            case LLL_SER:  exec_err=LLL_ser();  break;
+            case LLL_SERI: exec_err=LLL_seri(); break;
+            case LLL_LJMP: exec_err=LLL_ljmp(); break;
+            case LLL_JMP:  exec_err=LLL_jmp();  break;
+            case LLL_RET:  exec_err=LLL_ret();  break;
+            case LLL_CMP:  exec_err=LLL_cmp();  break;
+            case LLL_CMPI: exec_err=LLL_cmpi(); break;
+            case LLL_SEQ:  exec_err=LLL_seq();  break;
+            case LLL_DEQ:  exec_err=LLL_deq();  break;
+            case LLL_SLO:  exec_err=LLL_slo();  break;
+            case LLL_DLO:  exec_err=LLL_dlo();  break;
+            case LLL_SGR:  exec_err=LLL_sgr();  break;
+            case LLL_DGR:  exec_err=LLL_dgr();  break;
+            case LLL_IN:   exec_err=LLL_in();   break;
+            case LLL_OUT:  exec_err=LLL_out();  break;
+            case LLL_EXIT: exec_err=LLL_exit(); break;
+            default:
+                ///if no command executed
+                exec_err.status = LLL_NO_COMMAND; //command not found
+                exec_err.additional = lll_c; //which command wasn't found
+            break;
+        }
     }
-
     return exec_err;
 }
 

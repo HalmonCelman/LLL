@@ -24,22 +24,22 @@ DEC 	(x)
 SER	    (x)
 SERI	(x)
 
-LJMP	( )
+LJMP	(x)
 JMP	    (x)
 RET     (x)
 
-CMP  	( )
-CMPI    ( )
+CMP  	(x)
+CMPI    (x)
 
-SEQ	    ( )
-DEQ	    ( )
-SLO	    ( )
-DLO	    ( )
-SGR	    ( )
-DGR	    ( )
+SEQ	    (x)
+DEQ	    (x)
+SLO	    (x)
+DLO	    (x)
+SGR	    (x)
+DGR	    (x)
 
 IN	    ( )
 
-OUT	    ( )
+OUT	    (x)
 
 EXIT    (x)

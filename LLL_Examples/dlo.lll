@@ -1,0 +1,10 @@
+seri 1 &0 0
+:0 inc &0
+
+# here what you want to be in loop
+
+cmpi &0 3    # loop 3 times
+dlo
+ljmp 0
+exit            # then exit 
+       

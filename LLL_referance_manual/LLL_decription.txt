@@ -169,7 +169,7 @@ REG1+INT-1=REG2+INT-1-/
 *****************************************************************************************************************************
 SERI	16
 Sets value in register to integer
-	INT,REG,INT
+	INT,REG,INT1,INT2,...
 Same as SER but INTs instead of REG2...
 *****************************************************************************************************************************
 LJMP	17
@@ -188,12 +188,12 @@ Return to the function after last jump - ignored if there was no jump yet
 CMP		20
 Compare two registers
 	REG,REG
-Output: %R= if equal:1 ; if lower: 0; if greater: 2
+Output: %R=  if lower: 0; if equal:1 ; if greater: 2
 *****************************************************************************************************************************
 CMPI	21
 Compare register and integer
 	REG,INT
-Output: %R= if equal:1 ; if lower: 0; if greater: 2
+Output: %R=  if lower: 0; if equal:1 ; if greater: 2
 *****************************************************************************************************************************
 SEQ		22
 Skip next command if equal( if R flag=1 )
@@ -226,12 +226,12 @@ Do next command if greater( if R flag=2 )
 no output
 *****************************************************************************************************************************
 IN		28
-Get standard input( how many bytes and first REG), information from which stream you can give by M flag
-	REG
-Output is in &REG, &(REG+1), &(REG+2), ...- number of bytes readed depends on wchich stream you select
+Get standard input( how many bytes and first REG), information from which stream you can give by A flag
+	INT,REG
+Output is in &REG, &(REG+1), &(REG+2), ...- number of bytes readed depends also on wchich stream you select
 *****************************************************************************************************************************
 OUT		29
-Give informations to standard output (how many bytes and first REG), information to which stream you can give by A flag
+Give informations to standard output (first REG - how many bytes depends on stream selection), information to which stream you can give by A flag
 	REG
 Information given to standard output is in &REG, &(REG+1), &(REG+2), ...- number of bytes written depends on wchich stream you select
 *****************************************************************************************************************************

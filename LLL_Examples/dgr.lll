@@ -1,0 +1,9 @@
+seri 1 &0 3         # how many times
+:0 dec &0
+
+#here what you want to be in loop
+
+cmpi &0 0           # loop 3 times
+dgr
+ljmp 0
+exit                # then exit

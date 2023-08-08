@@ -3,8 +3,10 @@
 
 #include "LLL.h"
 
-#define TEXT(x) #x
-#define EXPAND(x) TEXT(x)
+#define COMP_EQ 1  //equal
+#define COMP_LO 0  //lower
+#define COMP_GR 2  //greater
+
 
 lll_err LLL_add(void);
 lll_err LLL_addi(void);
