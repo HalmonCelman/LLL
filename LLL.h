@@ -105,6 +105,7 @@ extern uint64_t lll_getPosition(void);
 
 //streams for device
 extern lll_err lll_stream_out(uint32_t,uint8_t);
+extern lll_err lll_stream_in(uint32_t,uint8_t);
 
 ///some helpful macros
 #define LLL_REG_MODE ((lll_h8 == '&') ? 0 : ((lll_h8 == '%') ? 1 : 2))

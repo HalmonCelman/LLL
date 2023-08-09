@@ -38,7 +38,7 @@ DLO	    (x)
 SGR	    (x)
 DGR	    (x)
 
-IN	    ( )
+IN	    (x)
 
 OUT	    (x)
 

@@ -950,8 +950,17 @@ lll_err LLL_dgr(void){
 lll_err LLL_in(void){
     lll_err inst_err;
     inst_err.status=LLL_OK;
+    
+    uint32_t lll_reg;
 
-    //load input
+    #if LLL_DEBUG_MODE
+        LLL_CHECK_REG(inst_err);
+        lll_send_info("in command ",LLL_load_mem(LLL_getFlagNumber('A')));
+    #else
+        lll_h8=lll_get();
+    #endif
+    
+    lll_reg=LLL_load_reg_addr(LLL_REG_MODE);
 
     if(lll_skip){
         #if LLL_DEBUG_MODE
@@ -959,8 +968,9 @@ lll_err LLL_in(void){
         #endif
         lll_skip=0;
     }else{
-        //main
+        inst_err = lll_stream_in(lll_reg,LLL_load_mem(LLL_getFlagNumber('A')));
     }
+
     return inst_err;
 }
 
@@ -983,7 +993,7 @@ lll_err LLL_out(void){
 
     if(lll_skip){
         #if LLL_DEBUG_MODE
-            lll_send_info("in skipped ",0);
+            lll_send_info("out skipped ",0);
         #endif
         lll_skip=0;
     }else{
