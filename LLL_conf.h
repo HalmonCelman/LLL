@@ -3,7 +3,7 @@
 
 
 ///options
-#define LLL_DEBUG_MODE 1 //on: 1, off: 0 - default 1
+#define LLL_DEBUG_MODE 0 //on: 1, off: 0 - default 1
 #define LLL_USE_EXTERNAL_MEMORY 1 //if true, external memory will be used - much more memory but this memory will be slower
 /*
 if LLL is in DEBUG mode it will return errors but may be slower
