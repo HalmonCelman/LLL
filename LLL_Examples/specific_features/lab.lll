@@ -1,0 +1,8 @@
+# this example is about forward labels - this feature should be used eventually and not for long jumps
+ljmp 0
+seri 5 &0 1 2 3 4 5 # smth to do
+:1                  # shold set label but shouldn't jump to it
+cmp &1 &2
+exit
+:0                  # should jump here
+add 2 &0            # in debug it would say that add is skipped but it's not - thats depends of driver

@@ -656,24 +656,19 @@ lll_err LLL_ser(void){
 
 
 lll_err LLL_seri(void){
-lll_err inst_err;
+    lll_err inst_err;
+    uint32_t lll_reg; //adress of register
 
-uint32_t lll_reg; //adress of register
+    inst_err.status=LLL_OK;
 
-inst_err.status=LLL_OK;
-
-#if LLL_DEBUG_MODE==1
     lll_number=lll_get(); //load number
-    lll_send_info("seri number: ",lll_number); //send debug info
-    LLL_CHECK_REG(inst_err); //check if properly written
-    lll_send_info("seri reg mode: ",LLL_REG_MODE); //send debug info
-    lll_reg=LLL_load_reg_addr(LLL_REG_MODE); //load register adress
-    lll_send_info("seri adress: ",lll_reg); //send debug info
-#else
-    lll_number=lll_get(); //load number
-    lll_h8=lll_get(); //load mode of register
+    #if LLL_DEBUG_MODE==1
+        LLL_CHECK_REG(inst_err); //check if properly written
+    #else
+        lll_h8=lll_get(); //load mode of register
+    #endif // LLL_DEBUG_MODE
     lll_reg=LLL_load_reg_addr(LLL_REG_MODE); //load adress
-#endif // LLL_DEBUG_MODE
+
     if(lll_skip){
         #if LLL_DEBUG_MODE
             lll_send_info("seri skipped ",0);
@@ -684,12 +679,14 @@ inst_err.status=LLL_OK;
         for(int i=0;i<lll_number;i++){
             lll_h8=lll_get();
             #if LLL_DEBUG_MODE
+                lll_send_info("seri number: ",lll_number); //send debug info
                 lll_send_info("seri value: ",lll_h8);
+                lll_send_info("seri adress: ",lll_reg); //send debug info
             #endif
             LLL_save_mem(lll_reg+i,lll_h8);
         }
     }
-return inst_err;
+    return inst_err;
 }
 
 lll_err LLL_ljmp(void){
@@ -704,9 +701,9 @@ lll_err LLL_ljmp(void){
         #endif
         lll_skip=0;
     }else{
-    uint64_t lll_label_adress=lll_get_label(lll_label_number);
-
     lll_last_jump=lll_getPosition();
+    uint64_t lll_label_adress=lll_get_label(lll_label_number);
+    
     lll_goTo(lll_label_adress);
 
     #if LLL_DEBUG_MODE

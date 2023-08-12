@@ -1,0 +1,11 @@
+# it's example of delay 'function'
+seri 1 %A 10    # set timer and get timer
+seri 2 &0 3 232 # 1000 ms
+out &0          # set
+:0              # wait loop
+# here you can do something while waiting
+in &0           # get
+cmpi &0 0       # check first register
+seq ljmp 0
+cmpi &1 0       # and second
+seq ljmp 0
