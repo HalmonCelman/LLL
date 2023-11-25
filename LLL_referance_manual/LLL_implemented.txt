@@ -1,45 +1,18 @@
-ADD 	(x)
-ADDI	(x)
-
-SUB	    (x)
-SUBI	(x)
-
-MUL	    (x)
-MULI	(x)
-
-DIV 	(x)
-DIVI	(x)
-
-AND	    (x)
-ANDI	(x)
-
-OR  	(x)
-ORI	    (x)
-
-NOT	    (x)
-
-INC	    (x)
-DEC 	(x)
-
-SER	    (x)
-SERI	(x)
-
-LJMP	(x)
-JMP	    (x)
-RET     (x)
-
-CMP  	(x)
-CMPI    (x)
-
-SEQ	    (x)
-DEQ	    (x)
-SLO	    (x)
-DLO	    (x)
-SGR	    (x)
-DGR	    (x)
-
-IN	    (x)
-
-OUT	    (x)
-
-EXIT    (x)
+ADD 	( )
+SUB	    ( )
+MUL	    ( )
+DIV 	( )
+AND	    ( )
+OR  	( )
+NOT	    ( )
+INC	    ( )
+DEC 	( )
+MOV     ( )
+JMP	    ( )
+RJMP    ( )
+FRJMP   ( )
+RET     ( )
+CMP  	( )
+IN	    ( )
+OUT	    ( )
+EXIT    ( )
