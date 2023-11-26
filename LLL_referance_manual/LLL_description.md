@@ -10,7 +10,7 @@ by KK
         - [Stack Pointer](#stack-pointer)
         - [Memory Matrix](#memory-matrix-description)
         - [Registers](#registers-description)
-        - [Flags](#flags-description)
+        - [Status Register](#sreg-description)
         - [Memory Map](#memory-map)
     - [Command Shape](#command-shape)
         - [Command](#command)
@@ -32,29 +32,32 @@ by KK
     - [Symbols used in Instruction Set Manual](#symbols-used-in-instruction-set-manual)
     - [Commands](#commands)
         - [ADD](#add)
-        - [SUB](#sub)
-        - [MUL](#mul)
-        - [DIV](#mul)
         - [AND](#and)
-        - [OR](#or)
-        - [NOT](#not)
-        - [INC](#inc)
-        - [DEC](#dec)
-        - [MOV](#mov)
-        - [JMP](#jmp)
-        - [RJMP](#rjmp)
-        - [FJMP](#fjmp)
-        - [RET](#ret)
         - [CMP](#cmp)
-        - [IN](#in)
-        - [OUT](#out)
+        - [DEC](#dec)
+        - [DIV](#mul)
         - [EXIT](#exit)
+        - [FJMP](#fjmp)
+        - [IN](#in)
+        - [INC](#inc)
+        - [JMP](#jmp)
+        - [MOV](#mov)
+        - [MUL](#mul)
+        - [NOT](#not)
+        - [OR](#or)
+        - [OUT](#out)
+        - [RET](#ret)
+        - [RJMP](#rjmp)
+        - [SUB](#sub)
+        
 - [Examples of usage](#examples-of-usage)
 
 ## Description
 ### Possibilities
 - LLL have memory adressed by **32 bits** - up to 4GB
-- Number of command is adressed by **8 bits**
+- S option is one bit
+- set/clear option is one bit
+- Number of command is adressed by **6 bits**
 - All memory units( registers also ) are 8-bit
 - All memory units starts with the value of 0 or readed from [Memory map](#memory-map)
 - **LLL isn't case-sensitive** so:
@@ -101,8 +104,8 @@ by KK
 #### **Registers description**
 > in fact they are part on the start of `Memory Matrix` they are adressed in **8 bit** value.
 
-#### **Flags description**  
-> another standalone memory in RAM, they change their values during execution, each command have specific impact on flags reffering to [Instruction Set Manual](#instruction-set-manual)
+#### **SREG description**  
+> **Status Register** - contains inside flags - each flag is 1 bit, each flag can be modified by some instructions reffering to [Instruction Set Manual](#instruction-set-manual)
 >
 > There are only few flags:
 >
@@ -110,6 +113,20 @@ by KK
 > - **A** Flag - Additional flag
 > - **R** Flag - Rest and Result flag
 > - **Z** Flag - Zero flag
+>
+> Construction of SREG:
+> ```
+> [x,x,x,x,Z,R,A,O]
+> MSB            LSB
+> x - unused
+> ```
+>
+> so at bit 0 is **O** flag
+> 
+> at bit 1 - **A** etc.
+>
+> *SREG behaves like register and can be used wherever registers can be used*
+
 #### **Memory Map** 
 > it is **FILE** and it's very important file, if you want in your application to load some data at the start I recommend to place it in memory map file
 >
@@ -150,14 +167,16 @@ by KK
 
 > also optional
 > you can construct with these conditional instructions
-> **condition** is build by **flag name** and either **s**(yes, once again) or **c** which means accordingly that flag is **set** or **cleared**
+> **condition** is build by **flag names*** and either **s**(yes, once again) or **c** which means accordingly that flag is **set** or **cleared**
 >
-> *flags are 8-bit so as **set** I mean every other value than 0 - **cleared** means flag is equal to 0*
+> *flags are set when 1 is on flag, cleared if 0*
 > 
 > Example:
 > ```
 > adds R0,@123,R1   # add with flag change
 > movos R0,R2       # if overflow occures do mov
+> cmp R0,R1         # compare values
+> movars R0,R1      # if A flag AND R flag are set
 > ```
 >
 > *clearification: if command have no condition it will be executed **always***
@@ -201,10 +220,6 @@ by KK
 
 ### Syntax Description
 
-> **Normally comments will be deleted from code in compilation**
-> but if you **REALLY** want to put comment in executable file you can do this - it will make your program larger and a bit slower(compiler will make jump just after comment so it will not be executed), *how to do this?*
->> instead of just **#** or **/\* \*/** place **#!** or **/\*! !\*/**
-
 #### Constants
 
 > What syntax is for constant parameter?
@@ -214,13 +229,19 @@ by KK
 > ```
 > add R0,@5,@9 # write 14 to R0
 > ```
+>
+> *also remember that constants are **8bit** so you cant write more than 255*
 
 #### Flags
-
-> **Everywhere you are using memory you can also use flags - flags are just memory**
->
-> - How to access flags? 
->> Just write their names after **%**
+> - How to access SREG?
+>> write **SREG** as a register, or just **$**:
+>> ```
+>> add R0,SREG,R1
+>> add R0,$,R1
+>> ``````
+> - How to access particular flag? 
+>> Just write their name after **%**
+>> Then this flag will return 1 or 0 when it is set or cleared  
 >>
 >> Examples:
 >> ```
@@ -347,6 +368,9 @@ by KK
 > mov R0,R5
 > won't be executed */
 > ``` 
+> **Normally comments will be deleted from code in compilation**
+> but if you **REALLY** want to put comment in executable file you can do this - it will make your program larger and a bit slower(compiler will make jump just after comment so it will not be executed), *how to do this?*
+>> instead of just **#** or **/\* \*/** place **#!** or **/\*! !\*/**
 
 #### .def directive
 
@@ -409,76 +433,13 @@ by KK
 > - {param 3} can be: **`Rx | &x | %x | *x | @x | y-x`**
 >
 > If used with s option:
-> - overflow: **%O** = remainder
+> - overflow: **%O** = 1
 > - no overflow: **%O** = 0
 > - if result = 0: **%Z** = 1
 > - if result != 0: **%Z** = 0
 > - all other flags are unchanged
 >
 > [***Examples***](#add-examples)
-
-#### SUB
-> substracts third parameter from second and gives the result to the first parameter
-> 
-> Syntax:
-> ```
-> sub {param1} {param2} {param3}
-> ```
->
-> - {param 1} can be: **`Rx | &x | %x | *x | y-x`**
-> - {param 2} can be: **`Rx | &x | %x | *x | @x | y-x`**
-> - {param 3} can be: **`Rx | &x | %x | *x | @x | y-x`**
->
-> If used with s option:
-> - underflow: **%O** = remainder
-> - no underflow: **%O** = 0
-> - if result = 0: **%Z** = 1
-> - if result != 0: **%Z** = 0
-> - all other flags are unchanged
->
-> [***Examples***](#sub-examples)
-
-#### MUL
-> multiplicates second and third parameter and gives the result to the first parameter
-> 
-> Syntax:
-> ```
-> mul {param1} {param2} {param3}
-> ```
->
-> - {param 1} can be: **`Rx | &x | %x | *x | y-x`**
-> - {param 2} can be: **`Rx | &x | %x | *x | @x | y-x`**
-> - {param 3} can be: **`Rx | &x | %x | *x | @x | y-x`**
->
-> If used with s option:
-> - overflow: **%O** = remainder
-> - no overflow: **%O** = 0
-> - if result = 0: **%Z** = 1
-> - if result != 0: **%Z** = 0
-> - all other flags are unchanged
->
-> [***Examples***](#mul-examples)
-
-
-#### DIV
-> divides third parameter by second and gives the result to the first parameter
-> 
-> Syntax:
-> ```
-> div {param1} {param2} {param3}
-> ```
->
-> - {param 1} can be: **`Rx | &x | %x | *x | y-x`**
-> - {param 2} can be: **`Rx | &x | %x | *x | @x | y-x`**
-> - {param 3} can be: **`Rx | &x | %x | *x | @x | y-x`**
->
-> If used with s option:
-> - overflow: **%R** = remainder
-> - if remainder = 0: **%Z** = 1
-> - if remainder != 0: **%Z** = 0
-> - all other flags are unchanged
->
-> [***Examples***](#div-examples)
 
 
 #### AND
@@ -500,12 +461,56 @@ by KK
 >
 > [***Examples***](#and-examples)
 
-#### OR
-> makes **binary or** of second and third parameter and gives the result to the first parameter
+
+#### CMP
+> compares first and second parameter
+> 
+> ***! This function is exception, it always sets flags !*** 
+>
+> Syntax:
+> ```
+> cmp {param1} {param2}
+> ```
+>
+> - {param1} can be: **`Rx | &x | %x | *x | @x | y-x`**
+> - {param2} can be: **`Rx | &x | %x | *x | @x | y-x`**
+>
+> **ALWAYS**:
+> - values are equal: **%R** = 1
+> - values are diffrent: **%R** = 0
+> - if param1 > param2: **%A** = 1
+> - if param1 <= param2: **%A** = 0
+> - all other flags are unchanged
+>
+> [***Examples***](#cmp-examples)
+
+
+#### DEC
+> decreases parameter by 1
 > 
 > Syntax:
 > ```
-> or {param1} {param2} {param3}
+> dec {param}
+> ```
+>
+> - {param} can be: **`Rx | &x | %x | *x | y-x`**
+>
+> If used with s option:
+> - underflow: **%O** = 1
+> - no underflow: **%O** = 0
+> - if result = 0: **%Z** = 1
+> - if result != 0: **%Z** = 0
+> - all other flags are unchanged
+>
+> [***Examples***](#dec-examples)
+
+
+#### DIV
+> divides third parameter by second and gives the result to the first parameter
+> 
+> Syntax:
+> ```
+> div {param1} {param2} {param3}
 > ```
 >
 > - {param 1} can be: **`Rx | &x | %x | *x | y-x`**
@@ -513,11 +518,137 @@ by KK
 > - {param 3} can be: **`Rx | &x | %x | *x | @x | y-x`**
 >
 > If used with s option:
+> - overflow: **%R** = 1
+> - if remainder = 0: **%Z** = 1
+> - if remainder != 0: **%Z** = 0
+> - all other flags are unchanged
+>
+> [***Examples***](#div-examples)
+
+
+#### EXIT
+> this function just exit program 
+>
+> Syntax:
+> ```
+> exit
+> ```
+>
+> *This function don't have any parameters*
+> 
+> *This function don't modify flags even with s option*
+>
+> [***Examples***](#exit-examples)
+
+
+#### FRJMP
+> Fast jumps relatively to adress or to label with or without saving return adress on stack
+> 
+> Syntax:
+> ```
+> frjmp {param1} {param2}
+> ```
+>
+> - {param1} can be: **`8v | :x`**
+> - {param2} can be: **`bv`**
+>
+> *This function doesn't set any flags even with s option*
+>
+> *if {param2} = 1 Stack Pointer increases by 4*
+>
+> [***Examples***](#frjmp-examples)
+
+
+#### IN
+> pulls values from IN stream, selecting from which stream
+> 
+> Syntax:
+> ```
+> in {param1} {param2}
+> ```
+>
+> - {param1} can be: **`Rx | &x | %x | *x | y-x`**
+> - {param2} can be: **`8v`**
+>
+> *This function don't modify flags even with s option*
+>
+> [***Examples***](#in-examples)
+
+
+#### INC
+> increases parameter by 1
+> 
+> Syntax:
+> ```
+> inc {param}
+> ```
+>
+> - {param} can be: **`Rx | &x | %x | *x | y-x`**
+>
+> If used with s option:
+> - overflow: **%O** = 1
+> - no overflow: **%O** = 0
 > - if result = 0: **%Z** = 1
 > - if result != 0: **%Z** = 0
 > - all other flags are unchanged
 >
-> [***Examples***](#or-examples)
+> [***Examples***](#inc-examples)
+
+
+#### JMP
+> jumps directly to adress or to label with or without saving return adress on stack
+>
+> Syntax:
+> ```
+> jmp {param1} {param2}
+> ```
+>
+> - {param1} can be: **`64v | :x`**
+> - {param2} can be: **`bv`**
+>
+> *This function doesn't set any flags even with s option*
+>
+> *if {param2} = 1 Stack Pointer increases by 4*
+>
+> [***Examples***](#jmp-examples)
+
+
+#### MOV
+> moves value of first parameter to the second one
+> 
+> Syntax:
+> ```
+> mov {param1} {param2}
+> ```
+>
+> - {param1} can be: **`Rx | &x | %x | *x | @x | y-x`**
+> - {param2} can be: **`Rx | &x | %x | *x | y-x`**
+>
+> *This function doesn't set any flags even with s option*
+>
+> [***Examples***](#mov-examples)
+
+
+#### MUL
+> multiplicates second and third parameter and gives the result to the first parameter
+> 
+> Syntax:
+> ```
+> mul {param1} {param2} {param3}
+> ```
+>
+> - {param 1} can be: **`Rx | &x | %x | *x | y-x`**
+> - {param 2} can be: **`Rx | &x | %x | *x | @x | y-x`**
+> - {param 3} can be: **`Rx | &x | %x | *x | @x | y-x`**
+>
+> If used with s option:
+> - overflow: **%O** = 1
+> - no overflow: **%O** = 0
+> - if result = 0: **%Z** = 1
+> - if result != 0: **%Z** = 0
+> - all other flags are unchanged
+>
+> [***Examples***](#mul-examples)
 
 
 #### NOT
@@ -538,110 +669,42 @@ by KK
 >
 > [***Examples***](#not-examples)
 
-#### INC
-> increases parameter by 1
+
+#### OR
+> makes **binary or** of second and third parameter and gives the result to the first parameter
 > 
 > Syntax:
 > ```
-> inc {param}
+> or {param1} {param2} {param3}
 > ```
 >
-> - {param} can be: **`Rx | &x | %x | *x | y-x`**
+> - {param 1} can be: **`Rx | &x | %x | *x | y-x`**
+> - {param 2} can be: **`Rx | &x | %x | *x | @x | y-x`**
+> - {param 3} can be: **`Rx | &x | %x | *x | @x | y-x`**
 >
 > If used with s option:
-> - overflow: **%O** = remainder
-> - no overflow: **%O** = 0
 > - if result = 0: **%Z** = 1
 > - if result != 0: **%Z** = 0
 > - all other flags are unchanged
 >
-> [***Examples***](#inc-examples)
+> [***Examples***](#or-examples)
 
-#### DEC
-> decreases parameter by 1
+
+#### OUT
+> pushes values into OUT stream, selecting for which stream
 > 
 > Syntax:
 > ```
-> dec {param}
+> out {param1} {param2}
 > ```
 >
-> - {param} can be: **`Rx | &x | %x | *x | y-x`**
+> - {param1} can be: **`Rx | &x | %x | *x | y-x`**
+> - {param2} can be: **`8v`**
 >
-> If used with s option:
-> - underflow: **%O** = remainder
-> - no underflow: **%O** = 0
-> - if result = 0: **%Z** = 1
-> - if result != 0: **%Z** = 0
-> - all other flags are unchanged
+> *This function don't modify flags even with s option*
 >
-> [***Examples***](#dec-examples)
+> [***Examples***](#out-examples)
 
-#### MOV
-> moves value of first parameter to the second one
-> 
-> Syntax:
-> ```
-> mov {param1} {param2}
-> ```
->
-> - {param1} can be: **`Rx | &x | %x | *x | @x | y-x`**
-> - {param2} can be: **`Rx | &x | %x | *x | y-x`**
->
-> *This function doesn't set any flags even with s option*
->
-> [***Examples***](#mov-examples)
-
-#### JMP
-> jumps directly to adress or to label with or without saving return adress on stack
->
-> Syntax:
-> ```
-> jmp {param1} {param2}
-> ```
->
-> - {param1} can be: **`64v | :x`**
-> - {param2} can be: **`bv`**
->
-> *This function doesn't set any flags even with s option*
->
-> *if {param2} = 1 Stack Pointer increases by 4*
->
-> [***Examples***](#jmp-examples)
-
-#### RJMP
-> jumps relatively to adress or to label with or without saving return adress on stack
->
-> Syntax:
-> ```
-> rjmp {param1} {param2}
-> ```
->
-> - {param1} can be: **`32v | :x`**
-> - {param2} can be: **`bv`**
->
-> *This function doesn't set any flags even with s option*
->
-> *if {param2} = 1 Stack Pointer increases by 4*
->
-> [***Examples***](#rjmp-examples)
-
-
-#### FRJMP
-> Fast jumps relatively to adress or to label with or without saving return adress on stack
-> 
-> Syntax:
-> ```
-> frjmp {param1} {param2}
-> ```
->
-> - {param1} can be: **`8v | :x`**
-> - {param2} can be: **`bv`**
->
-> *This function doesn't set any flags even with s option*
->
-> *if {param2} = 1 Stack Pointer increases by 4*
->
-> [***Examples***](#frjmp-examples)
 
 #### RET
 > Returns to the last-saved return adress
@@ -661,74 +724,49 @@ by KK
 >
 > [***Examples***](#ret-examples)
 
-#### CMP
-> compares first and second parameter
-> 
-> ***! This function is exception, it always sets flags !*** 
+
+#### RJMP
+> jumps relatively to adress or to label with or without saving return adress on stack
 >
 > Syntax:
 > ```
-> cmp {param1} {param2}
+> rjmp {param1} {param2}
 > ```
 >
-> - {param1} can be: **`Rx | &x | %x | *x | @x | y-x`**
-> - {param2} can be: **`Rx | &x | %x | *x | @x | y-x`**
+> - {param1} can be: **`32v | :x`**
+> - {param2} can be: **`bv`**
 >
-> **ALWAYS**:
-> - values are equal: **%R** = 1 and **%A**=2
-> - values are diffrent: **%R** = 0
-> - if param1 > param2: **%A** = 1
-> - if param1 < param2: **%A** = 0
+> *This function doesn't set any flags even with s option*
+>
+> *if {param2} = 1 Stack Pointer increases by 4*
+>
+> [***Examples***](#rjmp-examples)
+
+
+#### SUB
+> substracts third parameter from second and gives the result to the first parameter
+> 
+> Syntax:
+> ```
+> sub {param1} {param2} {param3}
+> ```
+>
+> - {param 1} can be: **`Rx | &x | %x | *x | y-x`**
+> - {param 2} can be: **`Rx | &x | %x | *x | @x | y-x`**
+> - {param 3} can be: **`Rx | &x | %x | *x | @x | y-x`**
+>
+> If used with s option:
+> - underflow: **%O** = 1
+> - no underflow: **%O** = 0
+> - if result = 0: **%Z** = 1
+> - if result != 0: **%Z** = 0
 > - all other flags are unchanged
 >
-> [***Examples***](#cmp-examples)
-
-#### IN
-> pulls values from IN stream, selecting from which stream
-> 
-> Syntax:
-> ```
-> in {param1} {param2}
-> ```
->
-> - {param1} can be: **`Rx | &x | %x | *x | y-x`**
-> - {param2} can be: **`8v`**
->
-> *This function don't modify flags even with s option*
->
-> [***Examples***](#in-examples)
-
-#### OUT
-> pushes values into OUT stream, selecting for which stream
-> 
-> Syntax:
-> ```
-> out {param1} {param2}
-> ```
->
-> - {param1} can be: **`Rx | &x | %x | *x | y-x`**
-> - {param2} can be: **`8v`**
->
-> *This function don't modify flags even with s option*
->
-> [***Examples***](#out-examples)
-
-#### EXIT
-> this function just exit program 
->
-> Syntax:
-> ```
-> exit
-> ```
->
-> *This function don't have any parameters*
-> 
-> *This function don't modify flags even with s option*
->
-> [***Examples***](#exit-examples)
+> [***Examples***](#sub-examples)
 
 
 ---
+
 
 ### Examples of usage
 #### ADD Examples
