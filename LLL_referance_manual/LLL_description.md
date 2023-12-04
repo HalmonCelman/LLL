@@ -1,4 +1,4 @@
-# LLL instruction set manual and description
+# LLL v 2.0 instruction set manual and description
 by KK
 
 ## Contents
@@ -359,18 +359,18 @@ by KK
 #### Comments
 
 > You can comment rest of line in your code using **#**
-> You can comment any part of code with **/\* \*/** 
+> You can comment any part of code with **/ \*/** 
 > Example:
 > ```
 > add R0,R1,R2 # this is one line comment
 > # add R0,R1,R2 <- this also
-> /* anything there
+> / anything there
 > mov R0,R5
 > won't be executed */
 > ``` 
 > **Normally comments will be deleted from code in compilation**
 > but if you **REALLY** want to put comment in executable file you can do this - it will make your program larger and a bit slower(compiler will make jump just after comment so it will not be executed), *how to do this?*
->> instead of just **#** or **/\* \*/** place **#!** or **/\*! !\*/**
+>> instead of just **#** or **/ \*/** place **#!** or **/! \*/**
 
 #### .def directive
 
