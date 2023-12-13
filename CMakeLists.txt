@@ -1,3 +1,5 @@
+project(LLL LANGUAGES C VERSION 2.0)
+
 set(LLL_SOURCES 
 LLL.c
 LLL_functions.c
@@ -8,4 +10,4 @@ LLL_conf.h
 LLL.h
 LLL_functions.h
 )
-add_library(LLL ${LLL_SOURCES} ${LLL_HEADERS})
+add_library(lll ${LLL_SOURCES} ${LLL_HEADERS})

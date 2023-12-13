@@ -1,5 +1,5 @@
 # compiled lll files
 *.l
-
+*.json
 # build
 [Bb][Uu][Ii][Ll][Dd]
