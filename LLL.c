@@ -7,6 +7,7 @@ uint8_t LLL_STACK[LLL_STACK_SIZE];
 uint32_t stack_pointer;
 uint8_t status_register;
 uint8_t globalCarry=0;
+uint8_t firstTime=1;
 
 //the most important function - executes one lll function
 lll_err LLL_exec(void){
@@ -16,18 +17,15 @@ lll_err LLL_exec(void){
     uint8_t lll_c; //command
     uint8_t lll_opt; //and options
 
-    if(globalCarry){
+    if(!firstTime){
         lll_c = globalCarry;
     }else{
         lll_c = lll_get();
+        firstTime=0;
     }
-    
+
     lll_opt = lll_c & 0xC0;
     lll_c   = lll_c & 0x3F;
-
-    #if LLL_DEBUG_MODE==1
-        lll_send_info("MainExec command: ",lll_c); //send debug info
-    #endif // LLL_DEBUG_MODE
 
     switch(lll_c){ //execute
         case LLL_ADD:   exec_err=LLL_add();     break;
@@ -148,6 +146,7 @@ static lll_param LLL_getHalfParam(uint8_t firstChar){
         case '@':
             tmpParam.type=cst;
             tmpParam.value1=lll_get();
+            break;
         default:
         lll_throw_error(1,"ERROR: Wrong parameter",firstChar);
     }
@@ -174,8 +173,9 @@ lll_param LLL_getParam(uint8_t carry){
     if(lll_tmp == '-'){
         tmpParam.type = range;
         tmpParam.value2 = LLL_getHalfParam(lll_get()).value1;
+        tmpParam.carry = lll_get();
     }else{
-        tmpParam.carry=lll_tmp;
+        tmpParam.carry = lll_tmp;
     }
 
     return tmpParam;

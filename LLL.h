@@ -45,8 +45,8 @@ typedef struct{
 
 typedef struct{
     uint8_t  type;
-    uint64_t value1;
-    uint64_t value2;
+    uint32_t value1;
+    uint32_t value2;
     uint8_t carry;
 } lll_param;
 
