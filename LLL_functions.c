@@ -34,12 +34,29 @@ char* itoa(int i, char b[]){
 
 #endif
 
-
 lll_err LLL_add(void){
     lll_err tmpErr;
     tmpErr.status=LLL_OK;
 
     lll_send_info("Command: add",0);
+
+    lll_param param1 = LLL_getParam(0);
+    lll_send_info("param1, value1",param1.value1);
+    lll_send_info("param1, value2",param1.value2);
+    lll_send_info("param1, type",param1.type);
+    lll_send_info("param1, carry",param1.carry);
+
+    lll_param param2 = LLL_getParam(param1.carry);
+    lll_send_info("param2, value1",param2.value1);
+    lll_send_info("param2, value2",param2.value2);
+    lll_send_info("param2, type",param2.type);
+    lll_send_info("param2, carry",param2.carry);
+
+    lll_param param3 = LLL_getParam(param2.carry);
+    lll_send_info("param3, value1",param3.value1);
+    lll_send_info("param3, value2",param3.value2);
+    lll_send_info("param3, type",param3.type);
+    lll_send_info("param3, carry",param3.carry);
 
     return tmpErr;
 }

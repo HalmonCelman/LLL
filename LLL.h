@@ -43,14 +43,29 @@ typedef struct{
     uint8_t additional; //additional information about error
 } lll_err;
 
+typedef struct{
+    uint8_t  type;
+    uint64_t value1;
+    uint64_t value2;
+    uint8_t carry;
+} lll_param;
+
+typedef enum{
+    mem,        // Rx,&x,*x
+    flag,       // %x
+    cst,        // @x
+    range,      // y-x
+} parameterType;
+
 ///memory
 extern uint8_t LLL_FAST_MEM[LLL_FAST_MEM_SIZE];
 extern uint8_t LLL_STACK[LLL_STACK_SIZE];
 
 ///global varialibes
-
 extern uint32_t stack_pointer;
 extern uint8_t status_register;
+extern uint8_t globalCarry;
+
 ///functions
 
 void LLL_init(void);
@@ -61,7 +76,8 @@ uint32_t LLL_load_reg_addr(uint8_t); //load adress of register - MODE: 0 - norma
 uint8_t LLL_load_mem(uint32_t);
 void LLL_save_mem(uint32_t,uint8_t);
 
-//additional
+//processing
+lll_param LLL_getParam(uint8_t carry);
 uint32_t LLL_get32bit(void);
 uint64_t LLL_get64bit(void);
 

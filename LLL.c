@@ -1,21 +1,30 @@
 #include "LLL.h"
 #include "LLL_functions.h"
 
-volatile uint64_t lll_last_jump;
-
 uint8_t LLL_FAST_MEM[LLL_FAST_MEM_SIZE];
 uint8_t LLL_STACK[LLL_STACK_SIZE];
 
 uint32_t stack_pointer;
 uint8_t status_register;
+uint8_t globalCarry=0;
 
 //the most important function - executes one lll function
 lll_err LLL_exec(void){
     lll_err exec_err;
     exec_err.status=LLL_OK; 
 
-    uint8_t lll_c=lll_get() & 0x3F; //read command
+    uint8_t lll_c; //command
+    uint8_t lll_opt; //and options
+
+    if(globalCarry){
+        lll_c = globalCarry;
+    }else{
+        lll_c = lll_get();
+    }
     
+    lll_opt = lll_c & 0xC0;
+    lll_c   = lll_c & 0x3F;
+
     #if LLL_DEBUG_MODE==1
         lll_send_info("MainExec command: ",lll_c); //send debug info
     #endif // LLL_DEBUG_MODE
@@ -47,27 +56,6 @@ lll_err LLL_exec(void){
     }
     return exec_err;
 }
-
-/*
-LLL_get32bit: gets 32bit value from program
-returns this value
-*/
-uint32_t LLL_get32bit(void){
-    uint32_t val32=0;
-    for(int i=0;i<4;i++){ //read adress
-        val32 = (val32<<8) + lll_get();
-    }
-    return val32;
-}
-
-uint64_t LLL_get64bit(void){
-    uint64_t val64=0;
-    for(int i=0;i<8;i++){ //read adress
-        val64 = (val64<<8) + lll_get();
-    }
-    return val64;
-}
-
 
 void LLL_init(void){
     #if LLL_USE_EXTERNAL_MEMORY
@@ -125,4 +113,86 @@ void LLL_save_mem(uint32_t adress, uint8_t value){
     #else
         LLL_FAST_MEM[adress]=value;
     #endif
+}
+
+
+// processing section
+static uint32_t LLL_load_mem_32(uint32_t address){
+    uint32_t tmpValue = LLL_load_mem(address);
+    tmpValue = (tmpValue<<8)+LLL_load_mem(address+1);
+    tmpValue = (tmpValue<<8)+LLL_load_mem(address+2);
+    tmpValue = (tmpValue<<8)+LLL_load_mem(address+3);
+    return tmpValue;
+}
+
+static lll_param LLL_getHalfParam(uint8_t firstChar){
+    lll_param tmpParam;
+    
+    switch(firstChar){
+        case 'r':
+            tmpParam.type=mem;
+            tmpParam.value1=lll_get();
+            break;
+        case '&':
+            tmpParam.type=mem;
+            tmpParam.value1=LLL_get32bit();
+            break;
+        case '%':
+            tmpParam.type=flag;
+            tmpParam.value1=lll_get();
+            break;
+        case '*':
+            tmpParam.type=mem;
+            tmpParam.value1=LLL_load_mem_32(LLL_get32bit());
+            break;
+        case '@':
+            tmpParam.type=cst;
+            tmpParam.value1=lll_get();
+        default:
+        lll_throw_error(1,"ERROR: Wrong parameter",firstChar);
+    }
+
+    tmpParam.value2=0;
+    tmpParam.carry=0;
+
+    return tmpParam;
+}
+
+lll_param LLL_getParam(uint8_t carry){
+    lll_param tmpParam;
+
+    uint8_t lll_tmp;
+    if(carry){
+        lll_tmp=carry;
+    }else{
+        lll_tmp=lll_get();
+    }
+
+    tmpParam = LLL_getHalfParam(lll_tmp);
+
+    lll_tmp=lll_get();
+    if(lll_tmp == '-'){
+        tmpParam.type = range;
+        tmpParam.value2 = LLL_getHalfParam(lll_get()).value1;
+    }else{
+        tmpParam.carry=lll_tmp;
+    }
+
+    return tmpParam;
+}
+
+uint32_t LLL_get32bit(void){
+    uint32_t val32=0;
+    for(int i=0;i<4;i++){ //read adress
+        val32 = (val32<<8) + lll_get();
+    }
+    return val32;
+}
+
+uint64_t LLL_get64bit(void){
+    uint64_t val64=0;
+    for(int i=0;i<8;i++){ //read adress
+        val64 = (val64<<8) + lll_get();
+    }
+    return val64;
 }
