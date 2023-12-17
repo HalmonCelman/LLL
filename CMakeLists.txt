@@ -1,13 +1,10 @@
 project(LLL LANGUAGES C VERSION 2.0)
 
-set(LLL_SOURCES 
-LLL.c
-LLL_functions.c
+set(LLL_FILES
+                    LLL_conf.h
+LLL.c               LLL.h
+LLL_functions.c     LLL_functions.h
+LLL_processing.c    LLL_processing.h
 )
 
-set(LLL_HEADERS
-LLL_conf.h
-LLL.h
-LLL_functions.h
-)
-add_library(lll ${LLL_SOURCES} ${LLL_HEADERS})
+add_library(lll ${LLL_FILES})

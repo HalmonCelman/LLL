@@ -9,6 +9,51 @@ uint8_t status_register;
 uint8_t globalCarry=0;
 uint8_t firstTime=1;
 
+// command section
+#define COMMAND_MAP_LENGTH 17
+const command_p lll_command_map[COMMAND_MAP_LENGTH]={
+    LLL_add,
+    LLL_and,
+    LLL_cmp,
+    LLL_dec,
+    LLL_div,
+    LLL_frjmp,
+    LLL_in,
+    LLL_inc,
+    LLL_jmp,
+    LLL_mov,
+    LLL_mul,
+    LLL_not,
+    LLL_or,
+    LLL_out,
+    LLL_ret,
+    LLL_rjmp,
+    LLL_sub
+};
+
+// number of tokens WITHOUT command itself
+const uint8_t lll_param_num[COMMAND_MAP_LENGTH]={
+    3,      // ADD
+    3,      // AND
+    2,      // CMP
+    1,      // DEC
+    3,      // DIV
+    2,      // FRJMP
+    2,      // IN
+    1,      // INC
+    2,      // JMP
+    2,      // MOV
+    3,      // MUL
+    2,      // NOT
+    2,      // OR
+    2,      // OUT
+    0,      // RET
+    2,      // RJMP
+    3       // SUB
+};
+// end of section
+
+
 //the most important function - executes one lll function
 lll_err LLL_exec(void){
     lll_err exec_err;
@@ -27,30 +72,15 @@ lll_err LLL_exec(void){
     lll_opt = lll_c & 0xC0;
     lll_c   = lll_c & 0x3F;
 
-    switch(lll_c){ //execute
-        case LLL_ADD:   exec_err=LLL_add();     break;
-        case LLL_AND:   exec_err=LLL_and();     break;
-        case LLL_CMP:   exec_err=LLL_cmp();     break;
-        case LLL_DEC:   exec_err=LLL_dec();     break;
-        case LLL_DIV:   exec_err=LLL_div();     break;
-        case LLL_FRJMP: exec_err=LLL_frjmp();   break;
-        case LLL_IN:    exec_err=LLL_in();      break;
-        case LLL_INC:   exec_err=LLL_inc();     break;
-        case LLL_JMP:   exec_err=LLL_jmp();     break;
-        case LLL_MOV:   exec_err=LLL_mov();     break;
-        case LLL_MUL:   exec_err=LLL_mul();     break;
-        case LLL_NOT:   exec_err=LLL_not();     break;
-        case LLL_OR:    exec_err=LLL_or();      break;
-        case LLL_OUT:   exec_err=LLL_out();     break;
-        case LLL_RET:   exec_err=LLL_ret();     break;
-        case LLL_RJMP:  exec_err=LLL_rjmp();    break;
-        case LLL_SUB:   exec_err=LLL_sub();     break;
-        case LLL_EXIT:  exec_err=LLL_exit();    break;
-        default:
-            ///if no command executed
-            exec_err.status = LLL_NO_COMMAND; //command not found
-            exec_err.additional = lll_c; //which command wasn't found
-        break;
+    if(lll_c == LLL_EXIT){
+        exec_err.status = LLL_EOP;
+    }else{
+        if(lll_c < COMMAND_MAP_LENGTH){
+            LLL_execute_command(lll_command_map[lll_c],lll_param_num[lll_c],lll_opt);
+        }else{
+            exec_err.status = LLL_NO_COMMAND;
+            exec_err.additional = lll_c;
+        }
     }
     return exec_err;
 }
@@ -114,85 +144,3 @@ void LLL_save_mem(uint32_t adress, uint8_t value){
 }
 
 
-// processing section
-static uint32_t LLL_load_mem_32(uint32_t address){
-    uint32_t tmpValue = LLL_load_mem(address);
-    tmpValue = (tmpValue<<8)+LLL_load_mem(address+1);
-    tmpValue = (tmpValue<<8)+LLL_load_mem(address+2);
-    tmpValue = (tmpValue<<8)+LLL_load_mem(address+3);
-    return tmpValue;
-}
-
-static lll_param LLL_getHalfParam(uint8_t firstChar){
-    lll_param tmpParam;
-    
-    switch(firstChar){
-        case 'r':
-            tmpParam.type=mem;
-            tmpParam.value1=lll_get();
-            break;
-        case '&':
-            tmpParam.type=mem;
-            tmpParam.value1=LLL_get32bit();
-            break;
-        case '%':
-            tmpParam.type=flag;
-            tmpParam.value1=lll_get();
-            break;
-        case '*':
-            tmpParam.type=mem;
-            tmpParam.value1=LLL_load_mem_32(LLL_get32bit());
-            break;
-        case '@':
-            tmpParam.type=cst;
-            tmpParam.value1=lll_get();
-            break;
-        default:
-        lll_throw_error(1,"ERROR: Wrong parameter",firstChar);
-    }
-
-    tmpParam.value2=0;
-    tmpParam.carry=0;
-
-    return tmpParam;
-}
-
-lll_param LLL_getParam(uint8_t carry){
-    lll_param tmpParam;
-
-    uint8_t lll_tmp;
-    if(carry){
-        lll_tmp=carry;
-    }else{
-        lll_tmp=lll_get();
-    }
-
-    tmpParam = LLL_getHalfParam(lll_tmp);
-
-    lll_tmp=lll_get();
-    if(lll_tmp == '-'){
-        tmpParam.type = range;
-        tmpParam.value2 = LLL_getHalfParam(lll_get()).value1;
-        tmpParam.carry = lll_get();
-    }else{
-        tmpParam.carry = lll_tmp;
-    }
-
-    return tmpParam;
-}
-
-uint32_t LLL_get32bit(void){
-    uint32_t val32=0;
-    for(int i=0;i<4;i++){ //read adress
-        val32 = (val32<<8) + lll_get();
-    }
-    return val32;
-}
-
-uint64_t LLL_get64bit(void){
-    uint64_t val64=0;
-    for(int i=0;i<8;i++){ //read adress
-        val64 = (val64<<8) + lll_get();
-    }
-    return val64;
-}

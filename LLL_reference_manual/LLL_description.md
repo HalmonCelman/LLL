@@ -93,7 +93,7 @@ by KK
 > 
 > Example of reading Stack Pointer:
 > ```
-> mov ^,R3-R0   # now we have it's value in R3-R0
+> mov R3-R0,^   # now we have it's value in R3-R0
 > ```
 > - with this register you can detect if your stact isn't too high
 > - when stack pointer overflows ***program will be killed*** so on stack can be up to 4 gigabytes of memory
@@ -174,9 +174,9 @@ by KK
 > Example:
 > ```
 > adds R0,@123,R1   # add with flag change
-> movos R0,R2       # if overflow occures do mov
+> movos R2,R0       # if overflow occures do mov
 > cmp R0,R1         # compare values
-> movars R0,R1      # if A flag AND R flag are set
+> movars R1,R0      # if A flag AND R flag are set
 > ```
 >
 > *clearification: if command have no condition it will be executed **always***
@@ -614,7 +614,7 @@ by KK
 
 
 #### MOV
-> moves value of first parameter to the second one
+> moves value of second parameter to the first one
 > 
 > Syntax:
 > ```

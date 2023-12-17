@@ -3,23 +3,25 @@
 
 #include "LLL.h"
 
-lll_err LLL_add(void);
-lll_err LLL_and(void);
-lll_err LLL_cmp(void);
-lll_err LLL_dec(void);
-lll_err LLL_div(void);
-lll_err LLL_frjmp(void);
-lll_err LLL_in(void);
-lll_err LLL_inc(void);
-lll_err LLL_jmp(void);
-lll_err LLL_mov(void);
-lll_err LLL_mul(void);
-lll_err LLL_not(void);
-lll_err LLL_or(void);
-lll_err LLL_out(void);
-lll_err LLL_ret(void);
-lll_err LLL_rjmp(void);
-lll_err LLL_sub(void);
-lll_err LLL_exit(void);
+typedef void (* command_p)(char);
+void LLL_execute_command(command_p command,uint8_t paramNumber,char options);
+
+void LLL_add(char);
+void LLL_and(char);
+void LLL_cmp(char);
+void LLL_dec(char);
+void LLL_div(char);
+void LLL_frjmp(char);
+void LLL_in(char);
+void LLL_inc(char);
+void LLL_jmp(char);
+void LLL_mov(char);
+void LLL_mul(char);
+void LLL_not(char);
+void LLL_or(char);
+void LLL_out(char);
+void LLL_ret(char);
+void LLL_rjmp(char);
+void LLL_sub(char);
 
 #endif
