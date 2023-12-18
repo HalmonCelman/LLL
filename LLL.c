@@ -4,7 +4,7 @@
 uint8_t LLL_FAST_MEM[LLL_FAST_MEM_SIZE];
 uint8_t LLL_STACK[LLL_STACK_SIZE];
 
-uint32_t stack_pointer;
+stackp_s stack_pointer;
 uint8_t status_register;
 uint8_t globalCarry=0;
 uint8_t firstTime=1;
@@ -139,6 +139,9 @@ void LLL_save_mem(uint32_t adress, uint8_t value){
         lll_external_mem_write(adress,value);
         }
     #else
+        lll_send_info("SA: ",adress);
+        lll_send_info("SV: ",value);
+        
         LLL_FAST_MEM[adress]=value;
     #endif
 }

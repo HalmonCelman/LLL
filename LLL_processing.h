@@ -15,6 +15,8 @@ typedef enum{
     flag,       // %x
     cst,        // @x
     range,      // y-x
+    sreg,       // $
+    sp          // ^
 } parameterType;
 
 
@@ -29,7 +31,6 @@ typedef struct
     lll_param param;
     uint8_t value;
     range_s range;
-    uint8_t rov;
 } token_s;
 
 lll_param LLL_getParam(uint8_t carry);

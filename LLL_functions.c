@@ -49,7 +49,7 @@ void LLL_execute_command(command_p command,uint8_t paramNumber,char options){
         }
         globalCarry = tokens[paramNumber-1].param.carry;                                // 2. setup carry
 
-        if(tokens[0].rov){                                                              // if range - token 0 is always the most important
+        if(tokens[0].param.type == range || tokens[0].param.type == sp){                // if range - token 0 is always the most important
             for(uint32_t j=0;1;j++){
                 for(uint8_t i=0;i<paramNumber;i++){
                     if(getValueInIteration(j,&tokens[i],&actVal[i])) return;     // 3. get actual values 

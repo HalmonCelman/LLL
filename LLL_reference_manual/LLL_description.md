@@ -291,18 +291,14 @@ by KK
 > - parameters can also be a **range**
 > - range subparameters are delimited by **-**
 > - range is a group of two registers, adresses or register and adress
-> - ***ALWAYS*** higher register/adress should be first 
 > 
 > Example ranges:
 > ```
 > R24-R15
 > &237-&112
-> &275-R255
+> &220-R255
 > *12-R15
 > ```
->
-> *last one is highly unrecommended and can cause unpredictable behaviour if adress at 12 will be lower than 15*
-
 ---
 
 ### Directives
@@ -321,8 +317,6 @@ by KK
 >> ```
 >> :label_name
 >> ```
-
-
 > - Labels? For what?
 >> For simplicity, when you are jumping somewhere you **don't want** to calculate where you should jump, let's pass it to compiler
 > - Example?
@@ -431,6 +425,35 @@ by KK
 > - {param 1} can be: **`Rx | &x | %x | *x | y-x`**
 > - {param 2} can be: **`Rx | &x | %x | *x | @x | y-x`**
 > - {param 3} can be: **`Rx | &x | %x | *x | @x | y-x`**
+>
+> **Functionality:**
+> 
+>> **Basics:**
+>>
+>> *param1 = param2 + param3*
+>>
+>> [Basic examples](#example-add1---basics)
+>
+>> **Ranges**
+>>
+>> Ranges have their arguments added one by one
+>> 
+>> [Ranges examples](#example-add2---ranges)
+>>
+>> And can be reversed, then added
+>> 
+>> [Reversing range example](#example-add3---more-ranges)
+>
+>> **Overflows:**
+>>
+>> when adding two values, if result >= 256 then local overflow occures
+>> if output parameter( parameter1 ) is **range** then this local overflow is stored into the byte which is next to the left: [overflow example](#example-add4---overflows) if there is no place to store the byte or parameter1 isn't range then overflow (**O**) is set
+>
+>> **Mixing types of parameters**
+>>
+>> You can also mix the type of parameters, then arguments will be added as long as parameter1 have place to store it or as long as one of parameter don't have values
+>>
+>> [Mixing example](#example-add5---mixed-types-and-ranges-of-different-length)
 >
 > If used with s option:
 > - overflow: **%O** = 1
@@ -770,7 +793,66 @@ by KK
 
 ### Examples of usage
 #### ADD Examples
+>> #### Example add.1 - Basics
+>> Adding **constants** and/or **single memory units** and storing in **single memory unit**
+>> ```
+>> add R0, @1, @2    # 3 is written to 0 address
+>> add R1, &0, @2    # R1 = &0 + 2 -> in this case &0=3 so R1=5
+>> add $,  R1, *5    # SREG = R1 + indirect address stored beggining from 5
+>> add %A, R0, R1    # if R0+R1 != 0 then A flag is set otherwise A is cleared 
+>> ```
+> 
+>> #### Example add.2 - Ranges
+>> Adding **ranges** and storing into **range**
+>> ```
+>> add R5-R4, R3-R2, R1-R0 # R0+R2 stored into R4, R1+R3 stored into R5
+>> add R3-R0, ^, R7-R4     # R3-R0 now have value of stack pointer increased by R7-R4
+>> ```
 >
+>> #### Example add.3 - More ranges
+>> You can do also:
+>> ```
+>> add R5-R4,R2-R3,R1-R0 # R4=R0+R3, R5=R1+R2
+>> ```
+>> And a bit tricky:
+>> ```
+>> assuming:
+>> R0 = 1
+>> 
+>> add R2-R1, R1-R0, R1-R0
+>>
+>> What is the value of R1 and R2?
+>> R1 = R0+R0 = 2
+>> and THEN
+>> R2 = R1+R1 = 2+2 = 4
+>> ```
+>
+>> #### Example add.4 - Overflows
+>> ```
+>> lets assume that:
+>> R0 = 255
+>> R1 = 5
+>> R2 = 1
+>> R3 = 1
+>> 
+>> then:
+>> add R5-R4,R3-R2,R1-R0
+>> 
+>> results in:
+>> R4 = R0+R2 = 0 -> 256 - local overflow
+>> R5 = R1+R3+1 -> because there was overflow
+>> so R5 = 7
+>> and overflow flag is CLEARED( if s option was set ) because overflow was stored into R5
+>> ```
+>
+>> #### Example add.5 - Mixed types and ranges of different length
+>> ***if sth is unchanged it doesn't mean it's 0***
+>> ```
+>> add R1-R0, @255, @1  # R1=1 R2=0 (from local overflow)
+>> add R1-R0, @12,  @0  # R1 is unchanged R2=12
+>> add R0, R1-R0, R3-R2 # R0 = R2+R0
+>> ```
+>>
 #### SUB Examples
 >
 #### MUL Examples

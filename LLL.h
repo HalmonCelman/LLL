@@ -47,8 +47,14 @@ typedef struct{
 extern uint8_t LLL_FAST_MEM[LLL_FAST_MEM_SIZE];
 extern uint8_t LLL_STACK[LLL_STACK_SIZE];
 
+typedef struct{
+    uint32_t value;
+    uint8_t counter;
+} stackp_s;
+
+
 ///global varialibes
-extern uint32_t stack_pointer;
+extern stackp_s stack_pointer;
 extern uint8_t status_register;
 extern uint8_t globalCarry;
 
