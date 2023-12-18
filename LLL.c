@@ -10,7 +10,7 @@ uint8_t globalCarry=0;
 uint8_t firstTime=1;
 
 // command section
-#define COMMAND_MAP_LENGTH 17
+#define COMMAND_MAP_LENGTH 19
 const command_p lll_command_map[COMMAND_MAP_LENGTH]={
     LLL_add,
     LLL_and,
@@ -26,6 +26,8 @@ const command_p lll_command_map[COMMAND_MAP_LENGTH]={
     LLL_not,
     LLL_or,
     LLL_out,
+    LLL_pop,
+    LLL_push,
     LLL_ret,
     LLL_rjmp,
     LLL_sub
@@ -47,6 +49,8 @@ const uint8_t lll_param_num[COMMAND_MAP_LENGTH]={
     2,      // NOT
     2,      // OR
     2,      // OUT
+    1,      // POP
+    1,      // PUSH
     0,      // RET
     2,      // RJMP
     3       // SUB

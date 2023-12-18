@@ -46,6 +46,8 @@ by KK
         - [NOT](#not)
         - [OR](#or)
         - [OUT](#out)
+        - [POP](#pop)
+        - [PUSH](#push)
         - [RET](#ret)
         - [RJMP](#rjmp)
         - [SUB](#sub)
@@ -728,6 +730,43 @@ by KK
 >
 > [***Examples***](#out-examples)
 
+#### POP
+> pops value from stack
+>
+> Syntax:
+> ```
+> pop {param}
+> ```
+>
+> - {param} can be **`Rx | &x | %x | *x | y-x`**
+>
+> If used with s option:
+> - if poped value = 0: **%Z** = 1
+> - if poped value != 0: **%Z** = 0
+> - all other flags are unchanged
+>
+> *this function decreases stack size by length of range or by 1*
+>
+> [***Examples***](#pop-examples)
+
+#### PUSH
+> pushes value into stack
+>
+> Syntax:
+> ```
+> push {param}
+> ```
+>
+> - {param} can be **`Rx | &x | %x | *x | @x | y-x`**
+>
+> If used with s option:
+> - if pushed value = 0: **%Z** = 1
+> - if pushed value != 0: **%Z** = 0
+> - all other flags are unchanged
+>
+> *this function incerases stack size by length of range or by 1*
+>
+> [***Examples***](#push-examples)
 
 #### RET
 > Returns to the last-saved return adress
@@ -880,6 +919,10 @@ by KK
 #### RET Examples
 >
 #### CMP Examples
+>
+#### PUSH Examples
+>
+#### POP Examples
 >
 #### IN Examples
 >

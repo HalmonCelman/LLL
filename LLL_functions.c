@@ -136,6 +136,14 @@ void LLL_out(char s){
     lll_send_info("Command: out",0);
 }
 
+void LLL_pop(char s){
+    lll_send_info("Command: pop",0);
+}
+
+void LLL_push(char s){
+    lll_send_info("Command: push",0);
+}
+
 void LLL_ret(char s){
     lll_send_info("Command: ret",0);
 }

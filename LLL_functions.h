@@ -20,6 +20,8 @@ void LLL_mul(char);
 void LLL_not(char);
 void LLL_or(char);
 void LLL_out(char);
+void LLL_pop(char);
+void LLL_push(char);
 void LLL_ret(char);
 void LLL_rjmp(char);
 void LLL_sub(char);

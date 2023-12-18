@@ -31,6 +31,8 @@ typedef enum{
     LLL_NOT,
     LLL_OR,
     LLL_OUT,
+    LLL_POP,
+    LLL_PUSH,
     LLL_RET,
     LLL_RJMP,
     LLL_SUB,
