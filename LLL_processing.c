@@ -1,6 +1,10 @@
 #include "LLL_processing.h"
 #include "LLL.h"
 
+uint64_t d_jmp;
+int32_t r_jmp;
+uint8_t rv;
+
 // processing section
 static uint32_t LLL_load_mem_32(uint32_t address){
     uint32_t tmpValue = LLL_load_mem(address);
@@ -10,9 +14,38 @@ static uint32_t LLL_load_mem_32(uint32_t address){
     return tmpValue;
 }
 
+static uint32_t LLL_get32bit(void){
+    uint32_t val32=0;
+    for(int i=0;i<4;i++){ //read adress
+        val32 = (val32<<8) + lll_get();
+    }
+    return val32;
+}
+
+static uint64_t LLL_get64bit(void){
+    uint64_t val64=0;
+    for(int i=0;i<8;i++){ //read adress
+        val64 = (val64<<8) + lll_get();
+    }
+    lll_send_info("64v",val64);
+    return val64;
+}
+
+static int32_t LLL_getS32bit(void){
+    int32_t val32=0;
+    for(int i=0;i<4;i++){ //read adress
+        val32 = (val32<<8) + lll_get();
+    }
+    lll_send_info("32v",val32);
+    return val32;
+}
+
 static lll_param LLL_getHalfParam(uint8_t firstChar){
     lll_param tmpParam;
     
+    tmpParam.value2=0;
+    tmpParam.carry=0;
+
     switch(firstChar){
         case 'r':
             tmpParam.type=mem;
@@ -43,10 +76,6 @@ static lll_param LLL_getHalfParam(uint8_t firstChar){
         default:
         lll_throw_error(1,"Wrong parameter",firstChar);
     }
-
-    tmpParam.value2=0;
-    tmpParam.carry=0;
-
     return tmpParam;
 }
 
@@ -74,27 +103,27 @@ lll_param LLL_getParam(uint8_t carry){
     return tmpParam;
 }
 
-uint32_t LLL_get32bit(void){
-    uint32_t val32=0;
-    for(int i=0;i<4;i++){ //read adress
-        val32 = (val32<<8) + lll_get();
-    }
-    return val32;
-}
+uint8_t LLL_doIfJump(lll_command_list command){
 
-uint64_t LLL_get64bit(void){
-    uint64_t val64=0;
-    for(int i=0;i<8;i++){ //read adress
-        val64 = (val64<<8) + lll_get();
+    if(LLL_FRJMP == command){
+        r_jmp=lll_get();
+    }else if(LLL_RJMP == command){
+        r_jmp = LLL_getS32bit();
+    }else if(LLL_JMP == command){
+        d_jmp = LLL_get64bit();
+    }else{
+        return 0;
     }
-    return val64;
-}
 
+    rv=lll_get();
+    return 1;
+}
 
 /*
 gets value of parameter or structure of range
 */
 void getValueOrRange(token_s * token){
+
     switch(token->param.type){
         case mem:
             token->value = LLL_load_mem(token->param.value1);

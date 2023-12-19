@@ -37,7 +37,7 @@ by KK
         - [DEC](#dec)
         - [DIV](#mul)
         - [EXIT](#exit)
-        - [FJMP](#fjmp)
+        - [FRJMP](#frjmp)
         - [IN](#in)
         - [INC](#inc)
         - [JMP](#jmp)
@@ -394,9 +394,9 @@ by KK
 
 ### Symbols used in Instruction Set Manual
 
-- **8v** means 8-bit value **signed**  ( without any prefix except minus if it's under 0)
-- **32v** means 32-bit value **signed** ( without any prefix except minus if it's under 0)
-- **64v** means 64-bit value ( without any prefix )
+- **8v** means 8-bit value **signed**      ( without any prefix )
+- **32v** means 32-bit value **signed**    ( without any prefix )
+- **64v** means 64-bit value **unsigned**  ( without any prefix )
 - **bv** means bool value - **1** or **0** ( without any prefix )
 - **Rx** means any [register](#registers)
 - **&x** means any [memory adress](#memory-matrix)

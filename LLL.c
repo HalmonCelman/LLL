@@ -66,11 +66,11 @@ lll_err LLL_exec(void){
     uint8_t lll_c; //command
     uint8_t lll_opt; //and options
 
-    if(!firstTime){
-        lll_c = globalCarry;
-    }else{
+    if(firstTime){
         lll_c = lll_get();
         firstTime=0;
+    }else{
+        lll_c = globalCarry;
     }
 
     lll_opt = lll_c & 0xC0;
@@ -80,7 +80,7 @@ lll_err LLL_exec(void){
         exec_err.status = LLL_EOP;
     }else{
         if(lll_c < COMMAND_MAP_LENGTH){
-            LLL_execute_command(lll_command_map[lll_c],lll_param_num[lll_c],lll_opt);
+            LLL_execute_command(lll_c,lll_command_map[lll_c],lll_param_num[lll_c],lll_opt);
         }else{
             exec_err.status = LLL_NO_COMMAND;
             exec_err.additional = lll_c;

@@ -4,7 +4,7 @@
 #include "LLL.h"
 
 typedef void (* command_p)(char);
-void LLL_execute_command(command_p command,uint8_t paramNumber,char options);
+void LLL_execute_command(lll_command_list command,command_p command_f,uint8_t paramNumber,char options);
 
 void LLL_add(char);
 void LLL_and(char);

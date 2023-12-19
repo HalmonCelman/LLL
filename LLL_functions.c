@@ -5,43 +5,19 @@
 #include "LLL_functions.h"
 #include "LLL_processing.h"
 
-#if LLL_DEBUG_MODE
-
-static void copyString(char* dest, char* source){
-    while(*source){
-        (*dest++)=*source++;
-    }
-}
-
-
-char* itoa(int i, char b[]){
-    char const digit[] = "0123456789";
-    char* p = b;
-    if(i<0){
-        *p++ = '-';
-        i *= -1;
-    }
-    int shifter = i;
-    do{ //Move to where representation ends
-        ++p;
-        shifter = shifter/10;
-    }while(shifter);
-    do{ //Move back, inserting digits as u go
-        *--p = digit[i%10];
-        i = i/10;
-    }while(i);
-    return b;
-}
-
-#endif
-
 token_s tokens[3];
 uint8_t actVal[3];
 uint8_t carry=0;
 
-void LLL_execute_command(command_p command,uint8_t paramNumber,char options){
+void LLL_execute_command(lll_command_list command,command_p command_f,uint8_t paramNumber,char options){
     carry = 0;
 
+    if(LLL_doIfJump(command)){
+        command_f(options);
+        globalCarry = lll_get();
+        return;
+    }
+    
     if(paramNumber){
         for(uint8_t i=0;i<paramNumber;i++){                                             // 1. get parameters and values
             tokens[i].param = LLL_getParam((i ? tokens[i-1].param.carry : 0));
@@ -54,15 +30,15 @@ void LLL_execute_command(command_p command,uint8_t paramNumber,char options){
                 for(uint8_t i=0;i<paramNumber;i++){
                     if(getValueInIteration(j,&tokens[i],&actVal[i])) return;     // 3. get actual values 
                 }
-                command(options);                                                       // 4. do whatever you want
+                command_f(options);                                                       // 4. do whatever you want
             }
         }else{                                                                          // if not range
             getValueInIteration(0,&tokens[1],&actVal[1]);                               // 3. get actual values
             getValueInIteration(0,&tokens[2],&actVal[2]);
-            command(options);                                                           // 4. do whatever you want
+            command_f(options);                                                           // 4. do whatever you want
         }
     }else{
-        command(options);
+        command_f(options);
     }
 }
 

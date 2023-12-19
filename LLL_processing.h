@@ -2,6 +2,7 @@
 #define LLL_PROCESSING_H
 
 #include <stdint.h>
+#include "LLL.h"
 
 typedef struct{
     uint8_t  type;
@@ -16,7 +17,7 @@ typedef enum{
     cst,        // @x
     range,      // y-x
     sreg,       // $
-    sp          // ^
+    sp,         // ^
 } parameterType;
 
 
@@ -33,10 +34,12 @@ typedef struct
     range_s range;
 } token_s;
 
-lll_param LLL_getParam(uint8_t carry);
-uint32_t LLL_get32bit(void);
-uint64_t LLL_get64bit(void);
+extern uint64_t d_jmp;   // direct jump
+extern int32_t r_jmp;    // relative jump
+extern uint8_t rv;       // if return adress should be written in stack or not
 
+lll_param LLL_getParam(uint8_t carry);
+uint8_t LLL_doIfJump(lll_command_list command);
 void getValueOrRange(token_s * token);
 uint8_t getValueInIteration(uint32_t iterator,token_s *token, uint8_t *actValue);
 void LLL_save(token_s token, uint8_t value);
