@@ -78,6 +78,7 @@ lll_err LLL_exec(void){
 
     if(lll_c == LLL_EXIT){
         exec_err.status = LLL_EOP;
+        LLL_execute_command(lll_c,LLL_exit,0,lll_opt);
     }else{
         if(lll_c < COMMAND_MAP_LENGTH){
             LLL_execute_command(lll_c,lll_command_map[lll_c],lll_param_num[lll_c],lll_opt);

@@ -26,4 +26,5 @@ void LLL_ret(char);
 void LLL_rjmp(char);
 void LLL_sub(char);
 
+void LLL_exit(char);
 #endif

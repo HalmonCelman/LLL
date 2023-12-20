@@ -9,11 +9,35 @@ token_s tokens[3];
 uint8_t actVal[3];
 uint8_t carry=0;
 
+static uint8_t LLL_conditional(lll_command_list command,command_p command_f,char options){
+    if(options & 0x80){
+        uint8_t flags=lll_get();
+        if(flags & 0x80){ //if should be set
+            if((flags & 0x7F & status_register) == (status_register & 0x7F)){
+                return (options & 0x40) ? 1 : 2;
+            }else{
+                return 0;
+            }
+        }else{ // if cleared
+            if((~flags & 0x7F & status_register) == (status_register & 0x7F)){
+                return (options & 0x40) ? 1 : 2;
+            }else{
+                return 0;
+            }
+        }
+    }else{
+        return 2;
+    }
+}
+
 void LLL_execute_command(lll_command_list command,command_p command_f,uint8_t paramNumber,char options){
     carry = 0;
 
+    uint8_t condition=LLL_conditional(command,command_f, options);
+
     if(LLL_doIfJump(command)){
-        command_f(options);
+        if(condition)
+            command_f((condition == 1));
         globalCarry = lll_get();
         return;
     }
@@ -30,15 +54,20 @@ void LLL_execute_command(lll_command_list command,command_p command_f,uint8_t pa
                 for(uint8_t i=0;i<paramNumber;i++){
                     if(getValueInIteration(j,&tokens[i],&actVal[i])) return;     // 3. get actual values 
                 }
-                command_f(options);                                                       // 4. do whatever you want
+                
+                if(condition)
+                    command_f((condition == 1));                                                       // 4. do whatever you want
             }
         }else{                                                                          // if not range
             getValueInIteration(0,&tokens[1],&actVal[1]);                               // 3. get actual values
             getValueInIteration(0,&tokens[2],&actVal[2]);
-            command_f(options);                                                           // 4. do whatever you want
+            
+            if(condition)
+                command_f((condition == 1));                                                           // 4. do whatever you want
         }
     }else{
-        command_f(options);
+        if(condition)
+            command_f((condition == 1));
     }
 }
 
@@ -130,4 +159,8 @@ void LLL_rjmp(char s){
 
 void LLL_sub(char s){
     lll_send_info("Command: sub",0);
+}
+
+void LLL_exit(char s){
+    lll_send_info("Exit",0);
 }

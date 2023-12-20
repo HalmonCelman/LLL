@@ -196,10 +196,11 @@ void LLL_save(token_s token, uint8_t value){
             break;
         case flag:
             if(value){
-                status_register |= token.param.value1;
+                status_register |= (1<<token.param.value1);
             }else{
-                status_register &=~ token.param.value1;
+                status_register &=~ (1<<token.param.value1);
             }
+            break;
         case sreg:
             status_register = value;
             break;
