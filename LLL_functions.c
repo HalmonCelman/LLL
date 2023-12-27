@@ -16,7 +16,7 @@ uint8_t Rest=0;
 uint8_t Additional=0;
 
 static void pushStack(uint8_t data){
-    if(stack_pointer.value == 0xFFFFFFFF){
+    if(stack_pointer.value >= LLL_STACK_SIZE){
         lll_throw_error(1,"STACK OVERFLOW - EXITING",1);
     }
     LLL_STACK[stack_pointer.value++]=data;
@@ -194,8 +194,8 @@ uint8_t LLL_frjmp(void){
     if(rv){
         pushStack8byte(lll_getPosition());
     }
-    
-    lll_goTo(ra+r_jmp);
+
+    lll_goTo(ra+(int32_t)r_jmp);
 
     #if LLL_DEBUG_MODE
         lll_send_info("Command: frjmp",rv);
@@ -261,6 +261,8 @@ uint8_t LLL_ret(void){
     #if LLL_DEBUG_MODE
         lll_send_info("Command: ret",tmp);
     #endif
+
+    return 0;
 }
 
 uint8_t LLL_rjmp(void){
@@ -268,7 +270,7 @@ uint8_t LLL_rjmp(void){
         pushStack8byte(lll_getPosition());
     }
 
-    lll_goTo(ra+r_jmp);
+    lll_goTo(ra+(int32_t)r_jmp);
 
     #if LLL_DEBUG_MODE
         lll_send_info("Command: rjmp",rv);
