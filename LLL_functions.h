@@ -3,28 +3,28 @@
 
 #include "LLL.h"
 
-typedef void (* command_p)(char);
+typedef uint8_t (* command_p)(void);
 void LLL_execute_command(lll_command_list command,command_p command_f,uint8_t paramNumber,char options);
 
-void LLL_add(char);
-void LLL_and(char);
-void LLL_cmp(char);
-void LLL_dec(char);
-void LLL_div(char);
-void LLL_frjmp(char);
-void LLL_in(char);
-void LLL_inc(char);
-void LLL_jmp(char);
-void LLL_mov(char);
-void LLL_mul(char);
-void LLL_not(char);
-void LLL_or(char);
-void LLL_out(char);
-void LLL_pop(char);
-void LLL_push(char);
-void LLL_ret(char);
-void LLL_rjmp(char);
-void LLL_sub(char);
+uint8_t LLL_add(void);
+uint8_t LLL_and(void);
+uint8_t LLL_cmp(void);
+uint8_t LLL_dec(void);
+uint8_t LLL_div(void);
+uint8_t LLL_frjmp(void);
+uint8_t LLL_in(void);
+uint8_t LLL_inc(void);
+uint8_t LLL_jmp(void);
+uint8_t LLL_mov(void);
+uint8_t LLL_mul(void);
+uint8_t LLL_not(void);
+uint8_t LLL_or(void);
+uint8_t LLL_out(void);
+uint8_t LLL_pop(void);
+uint8_t LLL_push(void);
+uint8_t LLL_ret(void);
+uint8_t LLL_rjmp(void);
+uint8_t LLL_sub(void);
 
-void LLL_exit(char);
+uint8_t LLL_exit(void);
 #endif

@@ -31,6 +31,8 @@ Automatic numeration by markdown
 0. not
 0. or
 0. out
+0. pop
+0. push
 0. ret
 0. rjmp
 0. sub

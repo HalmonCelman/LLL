@@ -39,6 +39,14 @@ typedef enum{
     LLL_EXIT=63
 } lll_command_list;
 
+typedef enum{
+    LLLF_O=0x1,
+    LLLF_A=0x2,
+    LLLF_R=0x4,
+    LLLF_Z=0x8
+} lll_flag_list;
+
+
 ///error stream
 typedef struct{
     lll_err_status status; //actual status returned
