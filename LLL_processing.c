@@ -3,7 +3,8 @@
 
 uint64_t d_jmp;
 int32_t r_jmp;
-uint8_t rv;
+uint64_t ra;
+uint8_t rv;  // if you should return
 
 // processing section
 static uint32_t LLL_load_mem_32(uint32_t address){
@@ -27,7 +28,6 @@ static uint64_t LLL_get64bit(void){
     for(int i=0;i<8;i++){ //read adress
         val64 = (val64<<8) + lll_get();
     }
-    lll_send_info("64v",val64);
     return val64;
 }
 
@@ -36,7 +36,6 @@ static int32_t LLL_getS32bit(void){
     for(int i=0;i<4;i++){ //read adress
         val32 = (val32<<8) + lll_get();
     }
-    lll_send_info("32v",val32);
     return val32;
 }
 
@@ -104,7 +103,6 @@ lll_param LLL_getParam(uint8_t carry){
 }
 
 uint8_t LLL_doIfJump(lll_command_list command){
-
     if(LLL_FRJMP == command){
         r_jmp=lll_get();
     }else if(LLL_RJMP == command){
@@ -114,7 +112,7 @@ uint8_t LLL_doIfJump(lll_command_list command){
     }else{
         return 0;
     }
-
+    
     rv=lll_get();
     return 1;
 }

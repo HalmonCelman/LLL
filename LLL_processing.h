@@ -37,6 +37,7 @@ typedef struct
 extern uint64_t d_jmp;   // direct jump
 extern int32_t r_jmp;    // relative jump
 extern uint8_t rv;       // if return adress should be written in stack or not
+extern uint64_t ra;      // return adress
 
 lll_param LLL_getParam(uint8_t carry);
 uint8_t LLL_doIfJump(lll_command_list command);

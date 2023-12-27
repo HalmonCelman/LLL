@@ -579,7 +579,7 @@ by KK
 >
 > *This function doesn't set any flags even with s option*
 >
-> *if {param2} = 1 Stack Pointer increases by 4*
+> *if {param2} = 1 Stack Pointer increases by 8*
 >
 > [***Examples***](#frjmp-examples)
 
@@ -633,7 +633,7 @@ by KK
 >
 > *This function doesn't set any flags even with s option*
 >
-> *if {param2} = 1 Stack Pointer increases by 4*
+> *if {param2} = 1 Stack Pointer increases by 8*
 >
 > [***Examples***](#jmp-examples)
 
@@ -782,7 +782,7 @@ by KK
 >
 > *This function doesn't set any flags even with s option*
 >
-> *This function decreases Stack Pointer by 4*
+> *This function decreases Stack Pointer by 8*
 >
 > [***Examples***](#ret-examples)
 
@@ -800,7 +800,7 @@ by KK
 >
 > *This function doesn't set any flags even with s option*
 >
-> *if {param2} = 1 Stack Pointer increases by 4*
+> *if {param2} = 1 Stack Pointer increases by 8*
 >
 > [***Examples***](#rjmp-examples)
 

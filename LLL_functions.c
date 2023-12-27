@@ -15,18 +15,48 @@ uint8_t Zero=0;
 uint8_t Rest=0;
 uint8_t Additional=0;
 
+static void pushStack(uint8_t data){
+    if(stack_pointer.value == 0xFFFFFFFF){
+        lll_throw_error(1,"STACK OVERFLOW - EXITING",1);
+    }
+    LLL_STACK[stack_pointer.value++]=data;
+}
+
+static uint8_t popStack(void){
+    if(stack_pointer.value){
+        return LLL_STACK[--stack_pointer.value];
+    }else{
+        lll_throw_error(1,"NO ELEMENTS ON STACK TO POP",0);
+    }
+}
+
+static void pushStack8byte(uint64_t u8byte){
+    for(uint8_t i=0; i<8; i++){
+        pushStack((u8byte >> (i*8)) & 0xFF);
+    }
+}
+
+static uint64_t popStack8byte(void){
+    uint64_t tmp=0;
+    for(uint8_t i=0; i<8; i++){
+        tmp = (tmp<<(i*8)) + popStack();
+    }
+    return tmp;
+}
+
+
 static uint8_t LLL_conditional(lll_command_list command,command_p command_f,char options){
     if(options & 0x80){
         uint8_t flags=lll_get();
         if(flags & 0x80){ //if should be set
-            if((flags & 0x7F & status_register) == (status_register & 0x7F)){
-                return 1;
+            if((flags & 0x7F & status_register) == (flags & 0x7F)){
+                return 2;
             }else{
                 return 0;
             }
         }else{ // if cleared
-            if((~flags & 0x7F & status_register) == (status_register & 0x7F)){
-                return 1;
+            if((~(flags & 0x7F) | status_register) == ~(flags & 0x7F)){
+                return 2;
             }else{
                 return 0;
             }
@@ -78,9 +108,10 @@ void LLL_execute_command(lll_command_list command,command_p command_f,uint8_t pa
     Additional = 0;
     Rest = 0;
     Zero = 0;
-
     if(options & 0x40) s_opt=1; // check if s option set
+    
     uint8_t condition=LLL_conditional(command,command_f, options);
+    ra = lll_getPosition()-condition;
 
     if(LLL_doIfJump(command)){
         if(condition)
@@ -115,6 +146,7 @@ void LLL_execute_command(lll_command_list command,command_p command_f,uint8_t pa
     }else{
         if(condition)
             setupFlags(command_f());
+        globalCarry = lll_get();
     }
 }
 
@@ -159,7 +191,17 @@ uint8_t LLL_div(void){
 }
 
 uint8_t LLL_frjmp(void){
-    lll_send_info("Command: frjmp",0);
+    if(rv){
+        pushStack8byte(lll_getPosition());
+    }
+    
+    lll_goTo(ra+r_jmp);
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("Command: frjmp",rv);
+    #endif
+
+    return 0;
 }
 
 uint8_t LLL_in(void){
@@ -171,7 +213,17 @@ uint8_t LLL_inc(void){
 }
 
 uint8_t LLL_jmp(void){
-    lll_send_info("Command: jmp",0);
+    if(rv){
+        pushStack8byte(lll_getPosition());
+    }
+
+    lll_goTo(d_jmp);
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("Command: jmp",rv);
+    #endif
+
+    return 0;
 }
 
 uint8_t LLL_mov(void){
@@ -203,11 +255,26 @@ uint8_t LLL_push(void){
 }
 
 uint8_t LLL_ret(void){
-    lll_send_info("Command: ret",0);
+    uint64_t tmp=popStack8byte();
+    lll_goTo(tmp);
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("Command: ret",tmp);
+    #endif
 }
 
 uint8_t LLL_rjmp(void){
-    lll_send_info("Command: rjmp",0);
+    if(rv){
+        pushStack8byte(lll_getPosition());
+    }
+
+    lll_goTo(ra+r_jmp);
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("Command: rjmp",rv);
+    #endif
+
+    return 0;
 }
 
 uint8_t LLL_sub(void){
