@@ -45,4 +45,7 @@ void getValueOrRange(token_s * token);
 uint8_t getValueInIteration(uint32_t iterator,token_s *token, uint8_t *actValue);
 void LLL_save(token_s token, uint8_t value);
 
+void pushStack8byte(uint64_t u8byte);
+uint64_t popStack8byte(void);
+
 #endif

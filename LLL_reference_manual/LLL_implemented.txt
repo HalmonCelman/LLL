@@ -1,6 +1,6 @@
 ADD 	(X)
-AND	    ( )
-CMP	    ( )
+AND	    (X)
+CMP	    (X)
 DEC 	( )
 DIV	    ( )
 FRJMP	(X)

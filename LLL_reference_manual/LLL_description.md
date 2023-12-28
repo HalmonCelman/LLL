@@ -501,8 +501,8 @@ by KK
 > - {param2} can be: **`Rx | &x | %x | *x | @x | y-x`**
 >
 > **ALWAYS**:
-> - values are equal: **%R** = 1
-> - values are diffrent: **%R** = 0
+> - values are equal: **%R** = 0
+> - values are diffrent: **%R** = 1
 > - if param1 > param2: **%A** = 1
 > - if param1 <= param2: **%A** = 0
 > - all other flags are unchanged

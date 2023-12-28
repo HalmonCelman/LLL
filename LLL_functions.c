@@ -15,36 +15,6 @@ uint8_t Zero=0;
 uint8_t Rest=0;
 uint8_t Additional=0;
 
-static void pushStack(uint8_t data){
-    if(stack_pointer.value >= LLL_STACK_SIZE){
-        lll_throw_error(1,"STACK OVERFLOW - EXITING",1);
-    }
-    LLL_STACK[stack_pointer.value++]=data;
-}
-
-static uint8_t popStack(void){
-    if(stack_pointer.value){
-        return LLL_STACK[--stack_pointer.value];
-    }else{
-        lll_throw_error(1,"NO ELEMENTS ON STACK TO POP",0);
-    }
-}
-
-static void pushStack8byte(uint64_t u8byte){
-    for(uint8_t i=0; i<8; i++){
-        pushStack((u8byte >> (i*8)) & 0xFF);
-    }
-}
-
-static uint64_t popStack8byte(void){
-    uint64_t tmp=0;
-    for(uint8_t i=0; i<8; i++){
-        tmp = (tmp<<(i*8)) + popStack();
-    }
-    return tmp;
-}
-
-
 static uint8_t LLL_conditional(lll_command_list command,command_p command_f,char options){
     if(options & 0x80){
         uint8_t flags=lll_get();
@@ -77,23 +47,23 @@ static void setupFlags(uint8_t flags){
         }
         if(flags & LLLF_A){
             if(Additional){
-                status_register &=~ LLLF_A;
-            }else{
                 status_register |= LLLF_A;
+            }else{
+                status_register &=~ LLLF_A;
             }
         }
         if(flags & LLLF_R){
             if(Rest){
-                status_register &=~ LLLF_R;
-            }else{
                 status_register |= LLLF_R;
+            }else{
+                status_register &=~ LLLF_R;
             }
         }
         if(flags & LLLF_Z){
             if(Zero){
-                status_register &=~ LLLF_Z;
-            }else{
                 status_register |= LLLF_Z;
+            }else{
+                status_register &=~ LLLF_Z;
             }
         }
         #if LLL_DEBUG_MODE
@@ -136,7 +106,8 @@ void LLL_execute_command(lll_command_list command,command_p command_f,uint8_t pa
                 if(condition)
                     setupFlags(command_f());                                                       // 4. do whatever you want
             }
-        }else{                                                                          // if not range
+        }else{  
+            getValueInIteration(0,&tokens[0],&actVal[0]);                                                                        // if not range
             getValueInIteration(0,&tokens[1],&actVal[1]);                               // 3. get actual values
             getValueInIteration(0,&tokens[2],&actVal[2]);
             
@@ -175,11 +146,34 @@ uint8_t LLL_add(void){
 }
 
 uint8_t LLL_and(void){
-    lll_send_info("Command: and",0);
+    uint8_t and_v = actVal[1] & actVal[2];
+
+    if(and_v){
+        Zero=1;
+    }
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("Command: and, result: ",and_v);
+    #endif
+
+    return LLLF_Z;
 }
 
 uint8_t LLL_cmp(void){
-    lll_send_info("Command: cmp",0);
+    if(!Rest){
+    if(actVal[0] > actVal[1]){
+        Rest = 1;
+        Additional = 1;
+    }else if(actVal[0] < actVal[1]){
+        Rest = 1;
+    }
+    }
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("Command: cmp, r:",Rest);
+    #endif
+    s_opt=1;
+    return LLLF_R | LLLF_A;
 }
 
 uint8_t LLL_dec(void){
@@ -195,7 +189,7 @@ uint8_t LLL_frjmp(void){
         pushStack8byte(lll_getPosition());
     }
 
-    lll_goTo(ra+(int32_t)r_jmp);
+    lll_goTo(ra+(int8_t)r_jmp);
 
     #if LLL_DEBUG_MODE
         lll_send_info("Command: frjmp",rv);
