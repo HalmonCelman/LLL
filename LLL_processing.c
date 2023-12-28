@@ -218,14 +218,14 @@ void LLL_save(token_s token, uint8_t value){
 
 void pushStack8byte(uint64_t u8byte){
     for(uint8_t i=0; i<8; i++){
-        pushStack((u8byte >> (i*8)) & 0xFF);
+        lll_pushStack((u8byte >> (i*8)) & 0xFF);
     }
 }
 
 uint64_t popStack8byte(void){
     uint64_t tmp=0;
     for(uint8_t i=0; i<8; i++){
-        tmp = (tmp<<(i*8)) + popStack();
+        tmp = (tmp<<(i*8)) + lll_popStack();
     }
     return tmp;
 }

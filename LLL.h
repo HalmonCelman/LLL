@@ -94,8 +94,8 @@ extern void lll_send_info(char*, uint32_t);
 extern void lll_throw_error(uint8_t,char *,uint8_t);
 extern void lll_goTo(uint64_t);
 extern uint64_t lll_getPosition(void);
-extern void pushStack(uint8_t data);
-extern uint8_t popStack(void);
+extern void lll_pushStack(uint8_t data);
+extern uint8_t lll_popStack(void);
 //streams for device
 extern lll_err lll_stream_out(uint32_t,uint8_t);
 extern lll_err lll_stream_in(uint32_t,uint8_t);

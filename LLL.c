@@ -47,7 +47,7 @@ const uint8_t lll_param_num[COMMAND_MAP_LENGTH]={
     2,      // MOV
     3,      // MUL
     2,      // NOT
-    2,      // OR
+    3,      // OR
     2,      // OUT
     1,      // POP
     1,      // PUSH

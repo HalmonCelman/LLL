@@ -511,7 +511,7 @@ by KK
 
 
 #### DEC
-> decreases parameter by 1
+> decreases ***every*** memory unit in parameter by 1
 > 
 > Syntax:
 > ```
@@ -646,8 +646,8 @@ by KK
 > mov {param1} {param2}
 > ```
 >
-> - {param1} can be: **`Rx | &x | %x | *x | @x | y-x`**
-> - {param2} can be: **`Rx | &x | %x | *x | y-x`**
+> - {param1} can be: **`Rx | &x | %x | *x | y-x`**
+> - {param2} can be: **`Rx | &x | %x | *x | @x | y-x`**
 >
 > *This function doesn't set any flags even with s option*
 >
@@ -681,7 +681,7 @@ by KK
 > 
 > Syntax:
 > ```
-> or {param1} {param2}
+> not {param1} {param2}
 > ```
 >
 > - {param 1} can be: **`Rx | &x | %x | *x | y-x`**

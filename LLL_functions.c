@@ -77,7 +77,7 @@ void LLL_execute_command(lll_command_list command,command_p command_f,uint8_t pa
     Overflow = 0;
     Additional = 0;
     Rest = 0;
-    Zero = 0;
+    Zero = 1;
     if(options & 0x40) s_opt=1; // check if s option set
     
     uint8_t condition=LLL_conditional(command,command_f, options);
@@ -138,8 +138,10 @@ uint8_t LLL_add(void){
         lll_send_info("Command: add, sum: ",sum);
     #endif
 
-    if(sum){
-        Zero=1;
+    if(Zero){
+        if(sum){
+            Zero=0;
+        }
     }
 
     return LLLF_O | LLLF_Z;
@@ -148,8 +150,10 @@ uint8_t LLL_add(void){
 uint8_t LLL_and(void){
     uint8_t and_v = actVal[1] & actVal[2];
 
-    if(and_v){
-        Zero=1;
+    if(Zero){
+        if(and_v){
+            Zero=0;
+        }
     }
 
     #if LLL_DEBUG_MODE
@@ -177,7 +181,22 @@ uint8_t LLL_cmp(void){
 }
 
 uint8_t LLL_dec(void){
-    lll_send_info("Command: dec",0);
+    if(!actVal[0]){
+        Overflow=1;
+    }
+
+    if(Zero){
+        if(actVal[0] != 1){
+            Zero = 0;
+        }
+    }
+
+    LLL_save(tokens[0],(uint8_t)(actVal[0]-1));
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("Command: dec",0);
+    #endif
+    return LLLF_O | LLLF_Z;
 }
 
 uint8_t LLL_div(void){
@@ -203,7 +222,22 @@ uint8_t LLL_in(void){
 }
 
 uint8_t LLL_inc(void){
-    lll_send_info("Command: inc",0);
+    if(!(actVal[0]+1)){
+        Overflow=1;
+    }
+
+    if(Zero){
+        if(actVal[0] != 255){
+            Zero = 0;
+        }
+    }
+
+    LLL_save(tokens[0],(uint8_t)(actVal[0]+1));
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("Command: inc",0);
+    #endif
+    return LLLF_O | LLLF_Z;
 }
 
 uint8_t LLL_jmp(void){
@@ -221,7 +255,14 @@ uint8_t LLL_jmp(void){
 }
 
 uint8_t LLL_mov(void){
-    lll_send_info("Command: mov",0);
+
+    LLL_save(tokens[0],actVal[1]);
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("Command: mov",actVal[1]);
+    #endif
+
+    return 0;
 }
 
 uint8_t LLL_mul(void){
@@ -229,11 +270,38 @@ uint8_t LLL_mul(void){
 }
 
 uint8_t LLL_not(void){
-    lll_send_info("Command: not",0);
+
+    LLL_save(tokens[0],~actVal[1]);
+
+    if(Zero){
+        if(actVal[1] != 0xFF){
+            Zero = 0;
+        }
+    }
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("Command: not",(uint8_t)~actVal[1]);
+    #endif
+
+    return LLLF_Z;
 }
 
 uint8_t LLL_or(void){
-    lll_send_info("Command: or",0);
+    uint8_t or_v = actVal[1] | actVal[2];
+
+    if(Zero){
+        if(or_v){
+            Zero=0;
+        }
+    }
+
+    LLL_save(tokens[0],or_v);
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("Command: or",or_v);
+    #endif
+
+    return LLLF_Z;
 }
 
 uint8_t LLL_out(void){
@@ -241,11 +309,39 @@ uint8_t LLL_out(void){
 }
 
 uint8_t LLL_pop(void){
-    lll_send_info("Command: pop",0);
+    uint8_t p_v = lll_popStack();
+
+    if(Zero){
+        if(p_v){
+            Zero=0;
+        }
+    }
+
+    LLL_save(tokens[0],p_v);
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("Command: pop",p_v);
+    #endif
+
+    return LLLF_Z;
 }
 
 uint8_t LLL_push(void){
-    lll_send_info("Command: push",0);
+    uint8_t p_v = actVal[0];
+
+    if(Zero){
+        if(p_v){
+            Zero=0;
+        }
+    }
+
+    lll_pushStack(p_v);
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("Command: push",p_v);
+    #endif
+
+    return LLLF_Z;
 }
 
 uint8_t LLL_ret(void){
