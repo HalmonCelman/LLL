@@ -89,15 +89,26 @@ void LLL_execute_command(lll_command_list command,command_p command_f,uint8_t pa
         globalCarry = lll_get();
         return;
     }
-    
+
+    uint8_t isStream = 0;
+    if(command == LLL_OUT || command == LLL_IN){    // for streams second parameter is independent
+        paramNumber--;
+        isStream = 1;
+    }
+
     if(paramNumber){
         for(uint8_t i=0;i<paramNumber;i++){                                             // 1. get parameters and values
             tokens[i].param = LLL_getParam((i ? tokens[i-1].param.carry : 0));
             getValueOrRange(&tokens[i]);
         }
-        globalCarry = tokens[paramNumber-1].param.carry;                                // 2. setup carry
-
+        if(isStream){
+            actVal[paramNumber] = tokens[paramNumber-1].param.carry;
+            globalCarry = lll_get();
+        }else{
+            globalCarry = tokens[paramNumber-1].param.carry;                                // 2. setup carry
+        }
         if(tokens[0].param.type == range || tokens[0].param.type == sp){                // if range - token 0 is always the most important
+
             for(uint32_t j=0;1;j++){
                 for(uint8_t i=0;i<paramNumber;i++){
                     if(getValueInIteration(j,&tokens[i],&actVal[i])){                   // 3. get actual values   
@@ -110,11 +121,11 @@ void LLL_execute_command(lll_command_list command,command_p command_f,uint8_t pa
                 if(condition)
                     setupFlags(command_f());                                            // 4. do whatever you want
             }
-        }else{  
-            getValueInIteration(0,&tokens[0],&actVal[0]);                               // if not range
-            getValueInIteration(0,&tokens[1],&actVal[1]);                               // 3. get actual values
-            getValueInIteration(0,&tokens[2],&actVal[2]);
-            
+        }else{ 
+            for(uint8_t i=0;i<paramNumber;i++){
+                getValueInIteration(0,&tokens[i],&actVal[i]);                               // if not range
+            }
+
             if(condition)
                 setupFlags(command_f());                                                           // 4. do whatever you want
         }
@@ -218,7 +229,18 @@ uint8_t LLL_frjmp(void){
 }
 
 uint8_t LLL_in(void){
-    lll_send_info("Command: in",0);
+    uint8_t tmpVal;
+    lll_err tmpErr = lll_stream_in(&tmpVal,actVal[1]);
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("Command: in - stream:",actVal[1]);
+    #endif
+
+    lll_throw_error(tmpErr.status,"Stream Out Error",tmpErr.additional);
+
+    LLL_save(tokens[0],tmpVal);
+
+    return 0;
 }
 
 uint8_t LLL_inc(void){
@@ -270,7 +292,6 @@ uint8_t LLL_mul(void){
 
     res = actVal[1]*actVal[2]+Overflow;
     if(res>0xFF){
-        lll_send_info("Command: mul, res: ",res);
         Overflow=(res>>8);
         res=res & 0xFF;
     }else{
@@ -328,7 +349,16 @@ uint8_t LLL_or(void){
 }
 
 uint8_t LLL_out(void){
-    lll_send_info("Command: out",0);
+
+    lll_err tmpErr = lll_stream_out(actVal[0],actVal[1]);
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("Command: out - stream:",actVal[1]);
+    #endif
+
+    lll_throw_error(tmpErr.status,"Stream Out Error",tmpErr.additional);
+
+    return 0;
 }
 
 uint8_t LLL_pop(void){

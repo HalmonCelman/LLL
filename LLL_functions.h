@@ -10,7 +10,6 @@ uint8_t LLL_add(void);
 uint8_t LLL_and(void);
 uint8_t LLL_cmp(void);
 uint8_t LLL_dec(void);
-uint8_t LLL_div(void);
 uint8_t LLL_frjmp(void);
 uint8_t LLL_in(void);
 uint8_t LLL_inc(void);

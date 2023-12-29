@@ -701,7 +701,7 @@ by KK
 > out {param1} {param2}
 > ```
 >
-> - {param1} can be: **`Rx | &x | %x | *x | y-x`**
+> - {param1} can be: **`Rx | &x | %x | *x | @x | y-x`**
 > - {param2} can be: **`8v`**
 >
 > *This function don't modify flags even with s option*

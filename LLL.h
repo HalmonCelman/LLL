@@ -96,7 +96,7 @@ extern uint64_t lll_getPosition(void);
 extern void lll_pushStack(uint8_t data);
 extern uint8_t lll_popStack(void);
 //streams for device
-extern lll_err lll_stream_out(uint32_t,uint8_t);
-extern lll_err lll_stream_in(uint32_t,uint8_t);
+extern lll_err lll_stream_out(uint8_t data ,uint8_t stream);
+extern lll_err lll_stream_in(uint8_t *data ,uint8_t stream);
 
 #endif // LLL_TINY_H_INCLUDED
