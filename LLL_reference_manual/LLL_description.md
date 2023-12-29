@@ -35,7 +35,6 @@ by KK
         - [AND](#and)
         - [CMP](#cmp)
         - [DEC](#dec)
-        - [DIV](#mul)
         - [EXIT](#exit)
         - [FRJMP](#frjmp)
         - [IN](#in)
@@ -528,27 +527,6 @@ by KK
 > - all other flags are unchanged
 >
 > [***Examples***](#dec-examples)
-
-
-#### DIV
-> divides third parameter by second and gives the result to the first parameter
-> 
-> Syntax:
-> ```
-> div {param1} {param2} {param3}
-> ```
->
-> - {param 1} can be: **`Rx | &x | %x | *x | y-x`**
-> - {param 2} can be: **`Rx | &x | %x | *x | @x | y-x`**
-> - {param 3} can be: **`Rx | &x | %x | *x | @x | y-x`**
->
-> If used with s option:
-> - overflow: **%R** = 1
-> - if remainder = 0: **%Z** = 1
-> - if remainder != 0: **%Z** = 0
-> - all other flags are unchanged
->
-> [***Examples***](#div-examples)
 
 
 #### EXIT

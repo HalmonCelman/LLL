@@ -21,7 +21,6 @@ Automatic numeration by markdown
 0. and       
 0. cmp
 0. dec
-0. div
 0. frjmp
 0. in
 0. inc

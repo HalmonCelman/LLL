@@ -166,12 +166,18 @@ return value - if length of range has been exceed - loop should be broken
 */
 uint8_t getValueInIteration(uint32_t iterator,token_s *token, uint8_t *actValue){
     if(token->param.type == range){
-        if(iterator >= token->range.length) return 1;
+        if(iterator >= token->range.length){
+            *actValue=0;
+            return 1;
+        }
         *actValue=LLL_load_mem(token->range.begin);
         token->range.begin += (token->range.increasing ? 1 : -1);
     }else if(token->param.type == sp){
         *actValue = ((stack_pointer.value>>(3<<stack_pointer.counter)) & 0xFF);
-        if(stack_pointer.counter>3)   return 1;
+        if(stack_pointer.counter>3){
+            *actValue=0;
+            return 1;
+        }
         stack_pointer.counter++;
     }else{
         if(!iterator){

@@ -10,7 +10,7 @@ uint8_t actVal[3];
 
 // flags
 uint8_t s_opt=0;
-uint8_t Overflow=0;
+uint16_t Overflow=0;
 uint8_t Zero=0;
 uint8_t Rest=0;
 uint8_t Additional=0;
@@ -100,14 +100,18 @@ void LLL_execute_command(lll_command_list command,command_p command_f,uint8_t pa
         if(tokens[0].param.type == range || tokens[0].param.type == sp){                // if range - token 0 is always the most important
             for(uint32_t j=0;1;j++){
                 for(uint8_t i=0;i<paramNumber;i++){
-                    if(getValueInIteration(j,&tokens[i],&actVal[i])) return;     // 3. get actual values 
+                    if(getValueInIteration(j,&tokens[i],&actVal[i])){                   // 3. get actual values   
+                        if(condition & i)
+                            setupFlags(command_f());
+                        return;    
+                    } 
                 }
                 
                 if(condition)
-                    setupFlags(command_f());                                                       // 4. do whatever you want
+                    setupFlags(command_f());                                            // 4. do whatever you want
             }
         }else{  
-            getValueInIteration(0,&tokens[0],&actVal[0]);                                                                        // if not range
+            getValueInIteration(0,&tokens[0],&actVal[0]);                               // if not range
             getValueInIteration(0,&tokens[1],&actVal[1]);                               // 3. get actual values
             getValueInIteration(0,&tokens[2],&actVal[2]);
             
@@ -199,10 +203,6 @@ uint8_t LLL_dec(void){
     return LLLF_O | LLLF_Z;
 }
 
-uint8_t LLL_div(void){
-    lll_send_info("Command: div",0);
-}
-
 uint8_t LLL_frjmp(void){
     if(rv){
         pushStack8byte(lll_getPosition());
@@ -266,7 +266,30 @@ uint8_t LLL_mov(void){
 }
 
 uint8_t LLL_mul(void){
-    lll_send_info("Command: mul",0);
+    uint32_t res;
+
+    res = actVal[1]*actVal[2]+Overflow;
+    if(res>0xFF){
+        lll_send_info("Command: mul, res: ",res);
+        Overflow=(res>>8);
+        res=res & 0xFF;
+    }else{
+        Overflow=0;
+    }
+
+    LLL_save(tokens[0],res);
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("Command: mul, result: ",res);
+    #endif
+
+    if(Zero){
+        if(res){
+            Zero=0;
+        }
+    }
+
+    return LLLF_O | LLLF_Z;
 }
 
 uint8_t LLL_not(void){
@@ -370,7 +393,29 @@ uint8_t LLL_rjmp(void){
 }
 
 uint8_t LLL_sub(void){
-    lll_send_info("Command: sub",0);
+    int16_t res;
+
+    res = actVal[1]-actVal[2]-Overflow;
+    if(res<0){
+        Overflow=1;
+        res+=256;
+    }else{
+        Overflow=0;
+    }
+
+    LLL_save(tokens[0],res);
+
+    #if LLL_DEBUG_MODE
+        lll_send_info("Command: sub, result: ",res);
+    #endif
+
+    if(Zero){
+        if(res){
+            Zero=0;
+        }
+    }
+
+    return LLLF_O | LLLF_Z;
 }
 
 uint8_t LLL_exit(void){

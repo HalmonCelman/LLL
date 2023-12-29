@@ -21,7 +21,6 @@ typedef enum{
     LLL_AND,
     LLL_CMP,
     LLL_DEC,
-    LLL_DIV,
     LLL_FRJMP,
     LLL_IN,
     LLL_INC,
