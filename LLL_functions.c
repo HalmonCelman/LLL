@@ -189,7 +189,7 @@ uint8_t LLL_cmp(void){
     }
 
     #if LLL_DEBUG_MODE
-        lll_send_info("Command: cmp, r:",Rest);
+        lll_send_info("Command: cmp, r: ",Rest);
     #endif
     s_opt=1;
     return LLLF_R | LLLF_A;
@@ -209,7 +209,7 @@ uint8_t LLL_dec(void){
     LLL_save(tokens[0],(uint8_t)(actVal[0]-1));
 
     #if LLL_DEBUG_MODE
-        lll_send_info("Command: dec",0);
+        lll_send_info("Command: dec, result: ",actVal[0]-1);
     #endif
     return LLLF_O | LLLF_Z;
 }
@@ -222,7 +222,7 @@ uint8_t LLL_frjmp(void){
     lll_goTo(ra+(int8_t)r_jmp);
 
     #if LLL_DEBUG_MODE
-        lll_send_info("Command: frjmp",rv);
+        lll_send_info("Command: frjmp, r opt: ",rv);
     #endif
 
     return 0;
@@ -233,10 +233,10 @@ uint8_t LLL_in(void){
     lll_err tmpErr = lll_stream_in(&tmpVal,actVal[1]);
 
     #if LLL_DEBUG_MODE
-        lll_send_info("Command: in - stream:",actVal[1]);
+        lll_send_info("Command: in - stream: ",actVal[1]);
     #endif
 
-    lll_throw_error(tmpErr.status,"Stream Out Error",tmpErr.additional);
+    lll_throw_error(tmpErr.status,"Stream Out Error ",tmpErr.additional);
 
     LLL_save(tokens[0],tmpVal);
 
@@ -257,7 +257,7 @@ uint8_t LLL_inc(void){
     LLL_save(tokens[0],(uint8_t)(actVal[0]+1));
 
     #if LLL_DEBUG_MODE
-        lll_send_info("Command: inc",0);
+        lll_send_info("Command: inc, result: ",0);
     #endif
     return LLLF_O | LLLF_Z;
 }
@@ -270,7 +270,7 @@ uint8_t LLL_jmp(void){
     lll_goTo(d_jmp);
 
     #if LLL_DEBUG_MODE
-        lll_send_info("Command: jmp",rv);
+        lll_send_info("Command: jmp, r opt: ",rv);
     #endif
 
     return 0;
@@ -281,7 +281,7 @@ uint8_t LLL_mov(void){
     LLL_save(tokens[0],actVal[1]);
 
     #if LLL_DEBUG_MODE
-        lll_send_info("Command: mov",actVal[1]);
+        lll_send_info("Command: mov, value: ",actVal[1]);
     #endif
 
     return 0;
@@ -324,7 +324,7 @@ uint8_t LLL_not(void){
     }
 
     #if LLL_DEBUG_MODE
-        lll_send_info("Command: not",(uint8_t)~actVal[1]);
+        lll_send_info("Command: not, result: ",(uint8_t)~actVal[1]);
     #endif
 
     return LLLF_Z;
@@ -342,7 +342,7 @@ uint8_t LLL_or(void){
     LLL_save(tokens[0],or_v);
 
     #if LLL_DEBUG_MODE
-        lll_send_info("Command: or",or_v);
+        lll_send_info("Command: or, result: ",or_v);
     #endif
 
     return LLLF_Z;
@@ -353,10 +353,10 @@ uint8_t LLL_out(void){
     lll_err tmpErr = lll_stream_out(actVal[0],actVal[1]);
 
     #if LLL_DEBUG_MODE
-        lll_send_info("Command: out - stream:",actVal[1]);
+        lll_send_info("Command: out - stream: ",actVal[1]);
     #endif
 
-    lll_throw_error(tmpErr.status,"Stream Out Error",tmpErr.additional);
+    lll_throw_error(tmpErr.status,"Stream Out Error ",tmpErr.additional);
 
     return 0;
 }
@@ -373,7 +373,7 @@ uint8_t LLL_pop(void){
     LLL_save(tokens[0],p_v);
 
     #if LLL_DEBUG_MODE
-        lll_send_info("Command: pop",p_v);
+        lll_send_info("Command: pop, value: ",p_v);
     #endif
 
     return LLLF_Z;
@@ -391,7 +391,7 @@ uint8_t LLL_push(void){
     lll_pushStack(p_v);
 
     #if LLL_DEBUG_MODE
-        lll_send_info("Command: push",p_v);
+        lll_send_info("Command: push, value: ",p_v);
     #endif
 
     return LLLF_Z;
@@ -402,7 +402,7 @@ uint8_t LLL_ret(void){
     lll_goTo(tmp);
 
     #if LLL_DEBUG_MODE
-        lll_send_info("Command: ret",tmp);
+        lll_send_info("Command: ret, place: ",tmp);
     #endif
 
     return 0;
@@ -416,7 +416,7 @@ uint8_t LLL_rjmp(void){
     lll_goTo(ra+(int32_t)r_jmp);
 
     #if LLL_DEBUG_MODE
-        lll_send_info("Command: rjmp",rv);
+        lll_send_info("Command: rjmp, r opt: ",rv);
     #endif
 
     return 0;
@@ -449,5 +449,6 @@ uint8_t LLL_sub(void){
 }
 
 uint8_t LLL_exit(void){
-    lll_send_info("Exit",0);
+    lll_send_info("Command: exit ",0);
+    return 0;
 }

@@ -141,10 +141,7 @@ void LLL_save_mem(uint32_t adress, uint8_t value){
         }else{
         lll_external_mem_write(adress,value);
         }
-    #else
-        lll_send_info("SA: ",adress);
-        lll_send_info("SV: ",value);
-        
+    #else        
         LLL_FAST_MEM[adress]=value;
     #endif
 }

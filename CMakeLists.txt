@@ -7,4 +7,4 @@ LLL_functions.c     LLL_functions.h
 LLL_processing.c    LLL_processing.h
 )
 
-add_library(lll ${LLL_FILES})
+add_library(LLL ${LLL_FILES})
