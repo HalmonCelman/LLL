@@ -209,7 +209,7 @@ uint8_t LLL_dec(void){
     LLL_save(tokens[0],(uint8_t)(actVal[0]-1));
 
     #if LLL_DEBUG_MODE
-        lll_send_info("Command: dec, result: ",actVal[0]-1);
+        lll_send_info("Command: dec, result: ",(uint8_t)(actVal[0]-1));
     #endif
     return LLLF_O | LLLF_Z;
 }
@@ -257,7 +257,7 @@ uint8_t LLL_inc(void){
     LLL_save(tokens[0],(uint8_t)(actVal[0]+1));
 
     #if LLL_DEBUG_MODE
-        lll_send_info("Command: inc, result: ",0);
+        lll_send_info("Command: inc, result: ",(uint8_t)(actVal[0]+1));
     #endif
     return LLLF_O | LLLF_Z;
 }
@@ -356,7 +356,7 @@ uint8_t LLL_out(void){
         lll_send_info("Command: out - stream: ",actVal[1]);
     #endif
 
-    lll_throw_error(tmpErr.status,"Stream Out Error ",tmpErr.additional);
+    lll_throw_error(tmpErr.status,"Stream Out Error ",0);
 
     return 0;
 }
