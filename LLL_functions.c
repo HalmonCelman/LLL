@@ -459,5 +459,9 @@ uint8_t LLL_sub(void){
 }
 
 uint8_t LLL_exit(void){
-    lll_send_info("Exit",0);
+    #if LLL_DEBUG_MODE
+        lll_send_info("Exit",0);
+    #endif
+    
+    return 0;
 }
